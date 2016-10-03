@@ -12,7 +12,9 @@ Plugin 'VundleVim/Vundle.vim'
 
 Bundle 'scrooloose/nerdtree'
 
-Bundle 'altercation/vim-colors-solarized'
+Plugin 'flazz/vim-colorschemes'
+
+Plugin 'bling/vim-airline'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -34,5 +36,7 @@ map <C-n> :NERDTreeToggle<CR>
 autocmd vimenter * NERDTree
 
 syntax enable
-set background=dark
-colorscheme solarized
+
+set number
+
+colorscheme molokai
