@@ -19,6 +19,9 @@ Plugin 'bling/vim-airline'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
+" if on windows use below: 
+" set rtp+=$HOME/vimfiles/bundle/Vundle.vim/
+" call vundle#begin('$USERPROFILE/vimfiles/bundle/')
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
 "
@@ -40,3 +43,10 @@ syntax enable
 set number
 
 colorscheme molokai
+
+if has('gui_running')
+    " gvim specific settings here
+    set gfn=Lucida_Console:h9.5
+    set gfw=Lucida_Console:h9.5
+    set lsp=3
+endif
