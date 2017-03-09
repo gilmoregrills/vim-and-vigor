@@ -39,4 +39,7 @@ syntax enable
 
 set number
 
-colorscheme molokai
+"colorscheme mizore
+"colorcheme grishin
+"colorscheme lilypink
+colorscheme landscape
