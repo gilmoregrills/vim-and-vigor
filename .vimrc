@@ -16,6 +16,8 @@ Plugin 'flazz/vim-colorschemes'
 
 Plugin 'bling/vim-airline'
 
+Plugin 'scrooloose/syntastic'
+
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -47,9 +49,15 @@ set number
 "colorscheme lilypink
 colorscheme landscape
 
+set tabstop=8 shiftwidth=4 expandtab
+
 if has('gui_running')
     " gvim specific settings here
     set gfn=Lucida_Console:h9.5
     set gfw=Lucida_Console:h9.5
     set lsp=3
 endif
+
+" Syntastic Config Here
+let g:syntastic_error_symbol = '😭'
+let g:syntastic_warning_symbol = '😬'
