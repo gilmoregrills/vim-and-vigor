@@ -1,0 +1,3 @@
+[submodule "font_backup/FiraFlott"]
+	path = font_backup/FiraFlott
+	url = https://github.com/kosimst/FiraFlott
