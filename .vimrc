@@ -9,15 +9,10 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
-
 Bundle 'scrooloose/nerdtree'
-
 Plugin 'flazz/vim-colorschemes'
-
 Plugin 'bling/vim-airline'
-
 Plugin 'scrooloose/syntastic'
-
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -59,5 +54,24 @@ if has('gui_running')
 endif
 
 " Syntastic Config Here
-let g:syntastic_error_symbol = '😭'
-let g:syntastic_warning_symbol = '😬'
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+set signcolumn=yes
+
+" Language Options
+let g:syntastic_python_checkers = ['prospector']
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_style_error_symbol = '😭'
+let g:syntastic_style_warning_symbol = '😬'
+let g:syntastic_error_symbol = '🔥'
+let g:syntastic_warning_symbol = '⚠️'
+
+highlight link SyntasticErrorSign SignColumn
+highlight link SyntasticWarningSign SignColumn
+highlight link SyntasticStyleErrorSign SignColumn
+highlight link SyntasticStyleWarningSign SignColumn

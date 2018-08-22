@@ -65,6 +65,7 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # User configuration
 
@@ -95,4 +96,17 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias vim="nvim"
-alias sandbox="ssh root@10.194.193.175"
+alias news="cd ~/git/newsuk/"
+alias g="git"
+alias tf="terraform"
+alias tk="tarmak kubectl"
+eval $(thefuck --alias)
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/rfarrow-yonge/Downloads/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/rfarrow-yonge/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/rfarrow-yonge/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/rfarrow-yonge/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/vault vault
