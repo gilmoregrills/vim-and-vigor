@@ -1,16 +1,21 @@
 {
+	"theme": "ayu-mirage.sublime-theme",
 	"color_scheme": "Packages/10% Too Dull for My Tastes Color Scheme/scotchy.tmTheme",
-	"font_face": "Fira Code",
-	"font_size": 12,
-	"highlight_line": true,
-	"ignored_packages":
+	"font_face": "Dank Mono",
+	"font_size": 14,
+	"font_options":
 	[
-		"Vintage"
+    	"gray_antialias",
+	    "subpixel_antialias"
 	],
+	"highlight_line": true,
 	"spell_check": false,
 	"tab_size": 4,
-	"theme": "ayu-mirage.sublime-theme",
 	"translate_tabs_to_spaces": true,
 	"trim_trailing_white_space_on_save": true,
-	"word_wrap": false
+	"word_wrap": false,
+	"ignored_packages": [
+		"Vintage"
+	],
+	"draw_minimap_border": false,
 }
