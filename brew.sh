@@ -66,8 +66,9 @@ brew install \
 brew cask install \
     1password \
     alfred \
-    brave-browser \
+    google-backup-and-sync \
     google-cloud-sdk \
+    google-chrome \
     keybase \
     qmk-toolbox \
     spotify \
