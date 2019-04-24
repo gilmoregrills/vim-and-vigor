@@ -50,25 +50,6 @@ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 # Uncomment this to make Bash-it create alias reload.
 # export BASH_IT_RELOAD_LEGACY=1
 
-# Functions:
-# function okta_k8s_auth(){
-#   if [ -z "$1" ]
-#     then
-#       echo "Please provide a cluster name"
-#   else
-#     echo "Cluster name is: " ${1}
-#     if [ ${1} == "dev-cluster" ]; then
-#       echo "configuring dev"
-#     elif [ ${1} == "staging-cluster" ];
-#       echo "configuring staging"
-#     elif [ ${1} == "prod-cluster" ]; then
-#       echo "configuring prod"
-#     else
-#       echo "Option should be one of: "
-#     fi
-#   fi
-# };
-
 function set_aws_pro(){
   if [ -z "$1" ]
     then
@@ -182,6 +163,23 @@ alias d="docker"
 
 # thefuck
 eval $(thefuck --alias)
+
+# Easier navigation: .., ..., ...., ....., ~ and -
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias -- -="cd -"                  # Go to previous dir with -
+alias cd.='cd $(readlink -f .)'    # Go to real dir (i.e. if current dir is linked)
+
+# Network
+alias ipl="echo \"private ip:\"; ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1';echo \"public ip:\"; curl whatismyip.akamai.com; echo"
+alias pcurl='curl --silent -o /dev/null -v -H "Pragma: akamai-x-cache-on, akamai-x-cache-remote-on, akamai-x-check-cacheable, akamai-x-get-cache-key, akamai-x-get-extracted-values, akamai-x-get-nonces, akamai-x-get-ssl-client-session-id, akamai-x-get-true-cache-key, akamai-x-serial-no"'
+
+alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
+alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
+
+alias idGroups="id -a | sed 's|,|\n|g'"
 
 # Load Bash It
 source "$BASH_IT"/bash_it.sh

@@ -7,6 +7,7 @@ brew install \
     avrdude \
     awscli \
     bash \
+    bash-completion \
     build-essential \
     cask \
     cfssl \
@@ -54,6 +55,7 @@ brew install \
     thefuck \
     tmux \
     tree \
+    vim \
     watch \
     watchman \
     wget \
