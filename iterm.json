@@ -1,8 +1,8 @@
 {
-  "Ansi 1 Color" : {
-    "Green Component" : 0.4235294,
-    "Red Component" : 1,
-    "Blue Component" : 0.37647059999999999
+  "Ansi 0 Color" : {
+    "Green Component" : 0.30978869999999997,
+    "Red Component" : 0.30978869999999997,
+    "Blue Component" : 0.30978869999999997
   },
   "Tags" : [
 
@@ -12,13 +12,18 @@
     "Red Component" : 0.71165029999999996,
     "Blue Component" : 0.9982605
   },
-  "Horizontal Spacing" : 1,
-  "Normal Font" : "FiraCode-Regular 13",
+  "Ansi 1 Color" : {
+    "Green Component" : 0.4235294,
+    "Red Component" : 1,
+    "Blue Component" : 0.37647059999999999
+  },
+  "Normal Font" : "DankMono-Regular 14",
   "Bold Color" : {
     "Green Component" : 1,
     "Red Component" : 1,
     "Blue Component" : 1
   },
+  "Horizontal Spacing" : 1,
   "Ansi 3 Color" : {
     "Green Component" : 1,
     "Red Component" : 1,
@@ -30,11 +35,6 @@
     "Blue Component" : 0.73423302173614502,
     "Alpha Component" : 1,
     "Green Component" : 0.35916060209274292
-  },
-  "Ansi 5 Color" : {
-    "Green Component" : 0.4509804,
-    "Red Component" : 1,
-    "Blue Component" : 0.99215690000000001
   },
   "Rows" : 25,
   "Default Bookmark" : "No",
@@ -323,11 +323,6 @@
     "Blue Component" : 0.37647059999999999
   },
   "Transparency" : 0,
-  "Ansi 0 Color" : {
-    "Green Component" : 0.30978869999999997,
-    "Red Component" : 0.30978869999999997,
-    "Blue Component" : 0.30978869999999997
-  },
   "Guid" : "B3AAE0B8-DA1F-48DC-A218-6F82DDDD41D1",
   "Ansi 2 Color" : {
     "Green Component" : 1,
@@ -340,6 +335,7 @@
     "Red Component" : 0.58823530000000002,
     "Blue Component" : 0.99607840000000003
   },
+  "Right Option Key Sends" : 0,
   "Use Non-ASCII Font" : false,
   "Ansi 7 Color" : {
     "Green Component" : 0.93353169999999996,
@@ -361,5 +357,9 @@
     "Red Component" : 0.77647060000000001,
     "Blue Component" : 0.99607840000000003
   },
-  "Right Option Key Sends" : 0
+  "Ansi 5 Color" : {
+    "Green Component" : 0.4509804,
+    "Red Component" : 1,
+    "Blue Component" : 0.99215690000000001
+  }
 }

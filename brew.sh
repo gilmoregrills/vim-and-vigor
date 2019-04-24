@@ -1,14 +1,13 @@
 brew install \
-    aom
-    autoconf \
     automake \
     avr-binutils \
+    aws-iam-authenticator \
     avr-gcc \
     avr-gcc@7 \
     avrdude \
     awscli \
     bash \
-    cairo \
+    build-essential \
     cask \
     cfssl \
     coreutils \
@@ -18,123 +17,49 @@ brew install \
     docker-machine \
     docker-machine-driver-xhyve \
     eksctl \
-    eksctl-aws-iam-authenticator \
-    emacs \
     ffmpeg \
     flac \
     fluxctl \
-    fontconfig \
-    freetype \
-    frei0r \
-    fribidi \
-    gcc-arm-none-eabi \
     gdbm \
-    gettext \
-    giflib \
-    git-crypt \
-    glib \
     gmp \
-    gnutls \
+    gnu-sed \
     go \
     goreleaser \
-    graphite2 \
     grep \
-    harfbuzz \
+    hadolint \
     htop \
     httpie \
-    icu4c \
-    ilmbase \
-    imagemagick \
-    isl \
-    jemalloc \
-    jpeg \
     jq \
+    kubectx \
     kubernetes-cli \
     kubeseal \
-    lame \
-    leptonica \
-    libass \
-    libbluray \
-    libde265 \
-    libelf \
-    libev \
-    libevent \
-    libffi \
-    libftdi0 \
-    libgpg-error \
-    libheif \
-    libhid \
-    libidn2 \
-    libksba \
-    libmpc \
-    libogg \
-    libomp \
-    libpng \
-    libsamplerate \
-    libsndfile \
-    libsoxr \
-    libtasn1 \
-    libtermkey \
-    libtiff \
-    libtool \
-    libunistring \
-    libusb \
-    libusb-compat \
-    libuv \
-    libvorbis \
-    libvpx \
-    libvterm \
-    libyaml \
-    little-cms2 \
-    luajit \
+    kustomize \
     make \
-    mpfr \
-    msgpack \
-    ncurses \
-    nettle \
+    netcat \
+    nmap \
     node \
     oniguruma \
-    opencore-amr \
-    openexr \
-    openjpeg \
+    openssh \
     openssl \
-    openssl@1.1 \
-    opus \
-    p11-kit \
     packer \
-    pcre \
-    pixman \
-    pkg-config \
     pwgen \
-    python \
+    python3 \
     readline \
-    rtmpdump \
-    rubberband \
-    sdl2 \
     shellcheck \
-    snappy \
     speedtest-cli \
-    speex \
     sqlite \
+    telnet \
     terraform \
     tesseract \
     thefuck \
-    theora \
     tmux \
     tree \
-    unibilium \
     watch \
     watchman \
-    webp \
     wget \
-    x264 \
-    x265 \
-    xhyve \
-    xvid \
-    xz \
     yarn \
-    zlib \
-    zsh-syntax-highlighting
+    yq
+
 
 brew cask install \
     1password \
@@ -147,7 +72,6 @@ brew cask install \
     sublime-text \
     virtualbox\
     1password-cli \
-    authy \
     discord \
     gpg-suite \
     lulu \
@@ -155,8 +79,6 @@ brew cask install \
     steam \
     typora \
     whatsapp\
-    agenda \
-    battle-net \
     docker \
     iterm2 \
     postman \
