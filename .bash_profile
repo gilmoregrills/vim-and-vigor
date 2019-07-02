@@ -1,5 +1,5 @@
 # Path to the bash it configuration
-export BASH_IT="/Users/rfarrow-yonge/.bash_it"
+export BASH_IT="/Users/robinyonge/.bash_it"
 
 # Lock and Load a custom theme file
 # location /.bash_it/themes/
@@ -24,6 +24,10 @@ export SCM_CHECK=true
 # GOLANG stuff:
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+
+#GNU sed/find etc
+export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
+
 
 # Set Xterm/screen/Tmux title with only a short hostname.
 # Uncomment this (or set SHORT_HOSTNAME to something else),
@@ -50,6 +54,33 @@ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 # Uncomment this to make Bash-it create alias reload.
 # export BASH_IT_RELOAD_LEGACY=1
 
+function awsssh(){
+  ssh $(aws ec2 describe-instances --region $1 --instance-id $2 --query 'Reservations[].Instances[].PrivateIpAddress' | tail -n 2 | head -n 1 | awk -F\" '{print $2}')
+};
+
+function awsip(){
+  aws ec2 describe-instances --region $1 --instance-id $2 --query 'Reservations[].Instances[].PrivateIpAddress' | tail -n 2 | head -n 1 | awk -F\" '{print $2}'
+};
+
+function explainshell() {
+  OUT=$(w3m -dump "http://explainshell.com/explain?cmd="`echo $@ | tr ' ' '+'}`)
+  echo
+  echo "$OUT"| grep -v explainshell | grep -v • | grep -v "source manpages" | sed '/./,$!d' | cat -s
+};
+
+function gAddKey() {
+  eval $(ssh-agent)
+  ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable
+};
+
+# pass a profile name and it will export the keys
+function set_aws_keys() {
+  id=(`aws configure get ${1}.aws_access_key_id`);
+  secret=(`aws configure get ${1}.aws_secret_access_key`);
+  export AWS_ACCESS_KEY_ID=$id;
+  export AWS_SECRET_ACCESS_KEY=$secret;
+};
+
 function set_aws_pro(){
   if [ -z "$1" ]
     then
@@ -63,6 +94,8 @@ function set_aws_pro(){
             break
           elif [[ "${vars[*]}" == *"$opt"* ]]; then
             export AWS_DEFAULT_PROFILE=$opt;
+            set_aws_keys $opt;
+            aws iam get-user;
             aws configure list;
             break
           else
@@ -85,6 +118,11 @@ function unset_aws_creds(){
   unset AWS_DEFAULT_PROFILE
   unset ASSUMED_ROLE
 };
+
+function get_aws_mfa_token(){
+    mfaSerial=(`aws iam list-mfa-devices |jq -r .MFADevices[0].SerialNumber`);
+    aws sts get-session-token --serial-number ${mfaSerial} --token-code ${1};
+}
 
 # set_aws_assumerole uses assume-role script, brew install assume-role
 function set_aws_assumerole(){
@@ -132,6 +170,8 @@ function chrome() {
   /usr/bin/open -a "/Applications/Google Chrome.app" "$site";
 };
 
+defaults write com.apple.screencapture location /Users/robinyonge/Dropbox/screenshots
+
 # Aliases:
 # General:
 alias reload="bash-it reload"
@@ -139,6 +179,9 @@ alias rr="reload"
 alias shebang='echo "#!/usr/bin/env bash"'
 alias typora="open -a typora"
 alias watch="watch "
+alias vim="nvim"
+alias sed="gsed"
+alias idGroups="id -a | sed 's|,|\n|g'"
 
 # Git:
 alias g="git"
@@ -151,6 +194,8 @@ alias gResetMaster="git fetch origin && git reset --hard origin/master"
 
 # Terraform
 alias tf="terraform"
+alias tf11="/usr/local/opt/terraform@0.11/bin/terraform"
+alias terraform@0.11="/usr/local/opt/terraform@0.11/bin/terraform"
 
 # Kubernetes
 alias k="kubectl"
@@ -178,8 +223,6 @@ alias pcurl='curl --silent -o /dev/null -v -H "Pragma: akamai-x-cache-on, akamai
 
 alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
 alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
-
-alias idGroups="id -a | sed 's|,|\n|g'"
 
 # Load Bash It
 source "$BASH_IT"/bash_it.sh

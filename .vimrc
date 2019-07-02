@@ -1,47 +1,53 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+" vim-plug plugin config:
+call plug#begin()
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-Bundle 'scrooloose/nerdtree'
-Plugin 'flazz/vim-colorschemes'
-Plugin 'bling/vim-airline'
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" if on windows use below:
-" set rtp+=$HOME/vimfiles/bundle/Vundle.vim/
-" call vundle#begin('$USERPROFILE/vimfiles/bundle/')
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+Plug 'flazz/vim-colorschemes'
+Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'scrooloose/nerdtree'
+Plug 'tpope/vim-surround'
+Plug 'spf13/vim-autoclose'
+Plug 'mbbill/undotree'
+Plug 'w0rp/ale'
+Plug 'ncm2/ncm2'
+Plug 'fatih/vim-go'
+
+call plug#end()
 
 map <C-n> :NERDTreeToggle<CR>
-
 autocmd vimenter * NERDTree
 
 syntax enable
 
+" themeing:
+" abstract is a good base theme at least, worth looking at editing it to be softer
+" set t_Co=256
+" set background=dark
+set termguicolors
+colorscheme fairyfloss
+let g:robin_airline = 1
+let g:airline_theme = 'fairyfloss'
+" uncomment these lines to switch between colorschemes depending on mode
+" au InsertLeave * colorscheme darkblue
+" au InsertEnter * colorscheme molokai
+
+
 set number
 
-"colorscheme mizore
-"colorcheme grishin
-"colorscheme lilypink
-colorscheme landscape
 
-set tabstop=4 shiftwidth=4 expandtab
+" gui settings
+set guifont=Dank\ Mono:h14
+
+" set indentation widths
+set tabstop=4 shiftwidth=4 expandtab softtabstop=4
+
+" start a new line and autoindent where lines are too long
+set autoindent
+set textwidth=100
+
+" fix error where vim cannot backspace
+set bs=2
 
