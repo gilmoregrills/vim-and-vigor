@@ -62,14 +62,8 @@ function awsip(){
   aws ec2 describe-instances --region $1 --instance-id $2 --query 'Reservations[].Instances[].PrivateIpAddress' | tail -n 2 | head -n 1 | awk -F\" '{print $2}'
 };
 
-function explainshell() {
-  OUT=$(w3m -dump "http://explainshell.com/explain?cmd="`echo $@ | tr ' ' '+'}`)
-  echo
-  echo "$OUT"| grep -v explainshell | grep -v • | grep -v "source manpages" | sed '/./,$!d' | cat -s
-};
-
 function gAddKey() {
-  eval $(ssh-agent)
+  eval "$(ssh-agent)"
   ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable
 };
 
@@ -119,10 +113,39 @@ function unset_aws_creds(){
   unset ASSUMED_ROLE
 };
 
-function get_aws_mfa_token(){
-    mfaSerial=(`aws iam list-mfa-devices |jq -r .MFADevices[0].SerialNumber`);
-    aws sts get-session-token --serial-number ${mfaSerial} --token-code ${1};
-}
+# Usage:
+# get_aws_mfa_token <code> <profile-name>
+# profile name is optional and it will default to "default"
+function aws_mfa_login(){
+    unset_aws_creds
+    if [ -z "$1" ]
+        then
+            echo "Please provide a token from your MFA device!";
+            return 1;
+    fi
+    if [ -z "$2" ]
+        then
+						echo "Profile not specified, using 'default'";
+            profile="default";
+        else
+            profile="$2";
+    fi
+    mfaSerial=(`aws iam list-mfa-devices | jq -r .MFADevices[0].SerialNumber`); # get the ARN of the mfa device
+    echo "Fetching temporary login credentials for `aws configure get ${profile}.aws_access_key_id`";
+    aws sts get-session-token --serial-number ${mfaSerial} --token-code ${1} --profile ${profile} > sts_output.json; # generates temporary creds using device and code 
+		if [ $? == 0 ]
+			  then
+            echo "Login Successful";
+		fi
+    access_key=$(jq '.Credentials.AccessKeyId' -r sts_output.json);
+    secret=$(jq '.Credentials.SecretAccessKey' -r sts_output.json);
+		session_token=$(jq '.Credentials.SessionToken' -r sts_output.json);
+    export AWS_ACCESS_KEY_ID=$access_key
+    export AWS_SECRET_ACCESS_KEY=$secret
+    export AWS_SESSION_TOKEN=$session_token
+		echo "Credentials Exported";
+    rm sts_output.json
+};
 
 # set_aws_assumerole uses assume-role script, brew install assume-role
 function set_aws_assumerole(){
@@ -172,6 +195,8 @@ function chrome() {
 
 defaults write com.apple.screencapture location /Users/robinyonge/Dropbox/screenshots
 
+source /Users/robinyonge/.bash_secrets
+
 # Aliases:
 # General:
 alias reload="bash-it reload"
@@ -207,9 +232,10 @@ alias kns="kubectl get ns"
 alias d="docker"
 
 # thefuck
-eval $(thefuck --alias)
+eval "$(thefuck --alias)"
 
 # Easier navigation: .., ..., ...., ....., ~ and -
+alias ls="ls -G"
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
@@ -221,6 +247,7 @@ alias cd.='cd $(readlink -f .)'    # Go to real dir (i.e. if current dir is link
 alias ipl="echo \"private ip:\"; ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1';echo \"public ip:\"; curl whatismyip.akamai.com; echo"
 alias pcurl='curl --silent -o /dev/null -v -H "Pragma: akamai-x-cache-on, akamai-x-cache-remote-on, akamai-x-check-cacheable, akamai-x-get-cache-key, akamai-x-get-extracted-values, akamai-x-get-nonces, akamai-x-get-ssl-client-session-id, akamai-x-get-true-cache-key, akamai-x-serial-no"'
 
+# OSX
 alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
 alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
 
