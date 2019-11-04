@@ -5,18 +5,18 @@ filetype plugin on
 " vim-plug plugin config:
 call plug#begin()
 
-Plug 'flazz/vim-colorschemes'
 Plug 'bling/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'scrooloose/nerdtree'
-Plug 'tpope/vim-surround'
-Plug 'spf13/vim-autoclose'
-Plug 'mbbill/undotree'
-Plug 'w0rp/ale'
 Plug 'fatih/vim-go'
-Plug 'HendrikPetertje/vimify'
-Plug 'hashivim/vim-terraform'
-Plug 'scrooloose/nerdcommenter'
+Plug 'flazz/vim-colorschemes'
+" Plug 'hashivim/vim-terraform'
+Plug 'mbbill/undotree'
+" Plug 'ryanoasis/vim-devicons'
+Plug 'scrooloose/nerdtree'
+Plug 'spf13/vim-autoclose'
+Plug 'tpope/vim-surround'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'w0rp/ale'
+Plug 'liuchengxu/vim-clap'
 
 call plug#end()
 
@@ -29,7 +29,7 @@ let NERDTreeShowHidden=1
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
-" ale options 
+" ale options
 let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_column_always = 1
 
@@ -43,6 +43,8 @@ nmap <F1> :NERDTreeToggle<CR>
 nmap <F2> :NERDComComment<CR>
 noremap <PageUp> :tabprevious<CR>
 noremap <PageDown> :tabnext<CR>
+"Remove all trailing whitespace by pressing F5
+nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 
 syntax enable
 
@@ -61,7 +63,7 @@ let g:airline_theme = 'fairyfloss'
 " uncomment these lines to switch between colorschemes depending on mode
 " au InsertLeave * colorscheme darkblue
 " au InsertEnter * colorscheme molokai
-
+set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:␣
 
 set number
 
@@ -80,4 +82,6 @@ set nowrap
 " fix error where vim cannot backspace
 set bs=2
 
-
+" set current window/buffer working dir to dir of file?
+" autocmd BufEnter * silent! lcd %:p:h
+" set autochdir

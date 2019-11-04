@@ -6,6 +6,8 @@
 	<true/>
 	<key>AboutToPasteTabsWithCancel_selection</key>
 	<integer>2</integer>
+	<key>AlternateMouseScroll</key>
+	<true/>
 	<key>AppleAntiAliasingThreshold</key>
 	<integer>1</integer>
 	<key>AppleScrollAnimationEnabled</key>
@@ -897,14 +899,16 @@
 	</dict>
 	<key>NSWindow Frame NSFontPanel</key>
 	<string>929 33 445 77 0 0 1440 877 </string>
+	<key>NSWindow Frame SUStatusFrame</key>
+	<string>-1480 1016 400 129 -2560 50 2560 1417 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
-	<string>410 363 620 392 0 0 1440 877 </string>
+	<string>-1590 818 620 392 -2560 50 2560 1417 </string>
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>48 482 928 394 0 0 1440 877 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>-2560 50 2560 1417 -2560 50 2560 1417 </string>
+	<string>-1277 50 1274 1417 -2560 50 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>-2560 50 2560 1417 -2560 50 2560 1417 </string>
+	<string>0 410 810 467 0 0 1440 877 </string>
 	<key>NeverWarnAboutShortLivedSessions_70AFB586-A1F3-4A85-9EB7-E23DD3B4118B</key>
 	<true/>
 	<key>NeverWarnAboutShortLivedSessions_70AFB586-A1F3-4A85-9EB7-E23DD3B4118B_selection</key>
@@ -1588,6 +1592,8 @@
 			<integer>-1</integer>
 			<key>Scrollback Lines</key>
 			<integer>1000</integer>
+			<key>Scrollback in Alternate Screen</key>
+			<false/>
 			<key>Selected Text Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -1944,23 +1950,24 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
+		<string>3.3.2</string>
 		<string>3.2.9</string>
-		<string>3.3.0</string>
 		<string>3.3.1</string>
+		<string>3.3.0</string>
 	</array>
 	<key>NoSyncFrame_SharedPreferences</key>
 	<dict>
 		<key>screenFrame</key>
-		<string>{{0, 0}, {1440, 900}}</string>
+		<string>{{-2560, 50}, {2560, 1440}}</string>
 		<key>topLeft</key>
-		<string>{319, 738}</string>
+		<string>{-1069, 823}</string>
 	</dict>
 	<key>NoSyncHaveWarnedAboutPasteConfirmationChange</key>
 	<true/>
 	<key>NoSyncInstallationId</key>
 	<string>6000D920-4050-41F0-AA7E-663559C9D3C7</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>3</integer>
+	<integer>5</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2401,6 +2408,14 @@
 				<key>isTerminal</key>
 				<true/>
 				<key>name</key>
+				<string>number</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
 				<string>currentTab.currentSession.hostname</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
@@ -2657,6 +2672,19 @@
 		<string>testAccessRobinYonge12346573</string>
 		<string>RequestId</string>
 	</array>
+	<key>NoSyncSearchHistory2</key>
+	<array>
+		<string>removejjjjjj</string>
+		<string>pushg</string>
+		<string>allow mes</string>
+		<string>allow meo</string>
+		<string>admin</string>
+		<string>jumpcloud</string>
+		<string>lambda</string>
+		<string>terraform</string>
+		<string>robins</string>
+		<string>public</string>
+	</array>
 	<key>NoSyncSuppressRestartSessionConfirmationAlert</key>
 	<true/>
 	<key>NoSyncSuppressRestartSessionConfirmationAlert_selection</key>
@@ -2711,13 +2739,15 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-08-13T21:23:57Z</date>
+	<date>2019-09-10T13:11:54Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
-	<false/>
+	<true/>
 	<key>SeparateStatusBarsPerPane</key>
 	<true/>
+	<key>ShowFullScreenTabBar</key>
+	<false/>
 	<key>ShowPaneTitles</key>
 	<false/>
 	<key>SoundForEsc</key>
@@ -2739,7 +2769,7 @@
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>iTerm Version</key>
-	<string>3.3.1</string>
+	<string>3.3.2</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
 	<integer>0</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>

@@ -67,18 +67,37 @@ function gAddKey() {
   ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable
 };
 
+function unset_aws_creds(){
+  unset AWS_SESSION_TOKEN
+  unset AWS_SECURITY_TOKEN
+  unset AWS_SECRET_ACCESS_KEY
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_DEFAULT_PROFILE
+  unset ASSUMED_ROLE
+};
+
 # pass a profile name and it will export the keys
 function set_aws_keys() {
   id=(`aws configure get ${1}.aws_access_key_id`);
   secret=(`aws configure get ${1}.aws_secret_access_key`);
+  session=(`aws configure get ${1}.aws_session_token`);
+  security=(`aws configure get ${1}.aws_security_token`);
   export AWS_ACCESS_KEY_ID=$id;
   export AWS_SECRET_ACCESS_KEY=$secret;
+  export AWS_SESSION_TOKEN=$session;
+  export AWS_SECURITY_TOKEN=$security;
+};
+
+function iterm2_set_user_vars() {
+  iterm2_set_user_var aws_profile "$AWS_DEFAULT_PROFILE"
 };
 
 function set_aws_pro(){
+  unset_aws_creds
   if [ -z "$1" ]
     then
       PS3='Select aws profile to use: '
+      #TODO: make the menu searchable/selectable with arrow keys
       vars=(`cat ~/.aws/credentials | grep '\[*\]'| egrep -o '[^][]+'`)
       echo "Execute \"set_aws_pro profile\" to switch account";
       select opt in "${vars[@]}" ""Quit
@@ -88,8 +107,9 @@ function set_aws_pro(){
             break
           elif [[ "${vars[*]}" == *"$opt"* ]]; then
             export AWS_DEFAULT_PROFILE=$opt;
+            iterm2_set_user_vars;
             set_aws_keys $opt;
-            aws iam get-user;
+            #TODO: add nicer output here from get-user and get-caller-identity
             aws configure list;
             break
           else
@@ -99,18 +119,10 @@ function set_aws_pro(){
       done
     else
       export AWS_DEFAULT_PROFILE=$1;
+      iterm2_set_user_vars;
       echo "Current profile is:";
       aws configure list;
   fi
-};
-
-function unset_aws_creds(){
-  unset AWS_SESSION_TOKEN
-  unset AWS_SECURITY_TOKEN
-  unset AWS_SECRET_ACCESS_KEY
-  unset AWS_ACCESS_KEY_ID
-  unset AWS_DEFAULT_PROFILE
-  unset ASSUMED_ROLE
 };
 
 # Usage:
@@ -132,7 +144,7 @@ function aws_mfa_login(){
     fi
     mfaSerial=(`aws iam list-mfa-devices | jq -r .MFADevices[0].SerialNumber`); # get the ARN of the mfa device
     echo "Fetching temporary login credentials for `aws configure get ${profile}.aws_access_key_id`";
-    aws sts get-session-token --serial-number ${mfaSerial} --token-code ${1} --profile ${profile} > sts_output.json; # generates temporary creds using device and code 
+    aws sts get-session-token --serial-number ${mfaSerial} --token-code ${1} --profile ${profile} > sts_output.json; # generates temporary creds using device and code
 		if [ $? == 0 ]
 			  then
             echo "Login Successful";
@@ -145,40 +157,6 @@ function aws_mfa_login(){
     export AWS_SESSION_TOKEN=$session_token
 		echo "Credentials Exported";
     rm sts_output.json
-};
-
-# set_aws_assumerole uses assume-role script, brew install assume-role
-function set_aws_assumerole(){
-  if [ -z "$1" ]
-    then
-      PS3='Select aws assume role profile to use: ';
-      vars=($(cat ~/.aws/config | awk -F'[][]' '{print $2}' | grep -oP 'assumerole-\K.*'));
-      echo "Execute \"set_aws_assumerole\" to assume another role";
-      select opt in "${vars[@]}" ""Quit
-        do
-          if [ "$opt" = "Quit" ]; then
-            echo done;
-            break;
-          elif [[ "${vars[*]}" == *"$opt"* ]]; then
-            role="assumerole-${opt}";
-            echo "Assuming role named: ${role}";
-            eval $(assume-role ${role});
-            account_aliases=$(aws iam list-account-aliases --query 'AccountAliases' --output text);
-            account_id=$(aws sts get-caller-identity --query 'Account' --output text);
-            echo "Assumed role in AccountID: ${account_id} AccountAlias: ${account_aliases}";
-            break;
-          else
-           clear;
-           echo bad option;
-          fi
-      done
-    else
-      echo "Assuming role named: ${1}";
-      eval $(assume-role ${1});
-      account_aliases=$(aws iam list-account-aliases --query 'AccountAliases' --output text);
-      account_id=$(aws sts get-caller-identity --query 'Account' --output text);
-      echo "Assumed role in AccountID: ${account_id} AccountAlias: ${account_aliases}";
-  fi
 };
 
 function chrome() {
@@ -206,7 +184,10 @@ alias typora="open -a typora"
 alias watch="watch "
 alias vim="nvim"
 alias sed="gsed"
+alias cssh="csshx"
 alias idGroups="id -a | sed 's|,|\n|g'"
+alias weatherAtHome="curl wttr.in/Stepney+Green+London"
+alias weather="curl wttr.in"
 
 # Git:
 alias g="git"
@@ -222,6 +203,11 @@ alias tf="terraform"
 alias tf11="/usr/local/opt/terraform@0.11/bin/terraform"
 alias terraform@0.11="/usr/local/opt/terraform@0.11/bin/terraform"
 
+# AWS etc
+alias awsProdSamlLogin="saml2aws login --session-duration 28000 --profile saml-prod && saml2aws script --profile saml-prod"
+alias awsSharedSamlLogin="saml2aws login --session-duration 28000 --profile saml-shared && saml2aws script --profile saml-shared"
+alias awsMasterSamlLogin="saml2aws login --session-duration 28000 --profile saml-master && saml2aws script --profile saml-master"
+
 # Kubernetes
 alias k="kubectl"
 alias kuebctl="kubectl" # most common typo lmao
@@ -230,6 +216,7 @@ alias kns="kubectl get ns"
 
 # Docker
 alias d="docker"
+alias dockerKillZombies="docker ps | grep hours | awk '{print $1}' | xargs docker kill"
 
 # thefuck
 eval "$(thefuck --alias)"
@@ -250,6 +237,12 @@ alias pcurl='curl --silent -o /dev/null -v -H "Pragma: akamai-x-cache-on, akamai
 # OSX
 alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
 alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
+# remap the weird +- key next to 1 to be escape
+hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000064,"HIDKeyboardModifierMappingDst":0x700000029}]}'
+
 
 # Load Bash It
 source "$BASH_IT"/bash_it.sh
+
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
