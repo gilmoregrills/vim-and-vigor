@@ -54,6 +54,10 @@ export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
 # Uncomment this to make Bash-it create alias reload.
 # export BASH_IT_RELOAD_LEGACY=1
 
+#
+# Functions:
+#
+
 function awsssh(){
   ssh $(aws ec2 describe-instances --region $1 --instance-id $2 --query 'Reservations[].Instances[].PrivateIpAddress' | tail -n 2 | head -n 1 | awk -F\" '{print $2}')
 };
@@ -92,14 +96,14 @@ function iterm2_set_user_vars() {
   iterm2_set_user_var aws_profile "$AWS_DEFAULT_PROFILE"
 };
 
-function set_aws_pro(){
+function awsSetProfile(){
   unset_aws_creds
   if [ -z "$1" ]
     then
       PS3='Select aws profile to use: '
       #TODO: make the menu searchable/selectable with arrow keys
       vars=(`cat ~/.aws/credentials | grep '\[*\]'| egrep -o '[^][]+'`)
-      echo "Execute \"set_aws_pro profile\" to switch account";
+      echo "Execute \"awsSetProfile profile\" to switch account";
       select opt in "${vars[@]}" ""Quit
         do
           if [ "$opt" = "Quit" ]; then
@@ -171,11 +175,10 @@ function chrome() {
   /usr/bin/open -a "/Applications/Google Chrome.app" "$site";
 };
 
-defaults write com.apple.screencapture location /Users/robinyonge/Dropbox/screenshots
-
-source /Users/robinyonge/.bash_secrets
-
+#
 # Aliases:
+#
+
 # General:
 alias reload="bash-it reload"
 alias rr="reload"
@@ -204,9 +207,9 @@ alias tf11="/usr/local/opt/terraform@0.11/bin/terraform"
 alias terraform@0.11="/usr/local/opt/terraform@0.11/bin/terraform"
 
 # AWS etc
-alias awsProdSamlLogin="saml2aws login --session-duration 28000 --profile saml-prod && saml2aws script --profile saml-prod"
-alias awsSharedSamlLogin="saml2aws login --session-duration 28000 --profile saml-shared && saml2aws script --profile saml-shared"
-alias awsMasterSamlLogin="saml2aws login --session-duration 28000 --profile saml-master && saml2aws script --profile saml-master"
+alias awsProdSamlLogin="saml2aws login --session-duration 28000 --profile saml-prod --role arn:aws:iam::635780325939:role/saml-roles/infrastructure && saml2aws script --profile saml-prod"
+alias awsSharedSamlLogin="saml2aws login --session-duration 28000 --profile saml-shared --role arn:aws:iam::608178844183:role/saml-roles/infrastructure && saml2aws script --profile saml-shared"
+alias awsMasterSamlLogin="saml2aws login --session-duration 28000 --profile saml-master --role arn:aws:iam::171004938551:role/infrastructure && saml2aws script --profile saml-master"
 
 # Kubernetes
 alias k="kubectl"
@@ -237,8 +240,19 @@ alias pcurl='curl --silent -o /dev/null -v -H "Pragma: akamai-x-cache-on, akamai
 # OSX
 alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
 alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
+
+#
+# startup script:
+#
+
+# write screenshots to dropbox please
+defaults write com.apple.screencapture location /Users/robinyonge/Dropbox/screenshots
 # remap the weird +- key next to 1 to be escape
 hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000064,"HIDKeyboardModifierMappingDst":0x700000029}]}'
+# ssh-add keys for git
+gAddKey
+# load commonly-used secrets as envvars
+source /Users/robinyonge/.bash_secrets
 
 
 # Load Bash It

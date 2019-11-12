@@ -832,6 +832,18 @@
 			<string></string>
 		</dict>
 	</dict>
+	<key>GlobalTouchBarMap</key>
+	<dict>
+		<key>touchbar:95CBAAA8-06E5-4513-A262-514AD5F084E6</key>
+		<dict>
+			<key>Action</key>
+			<integer>26</integer>
+			<key>Label</key>
+			<string>term</string>
+			<key>Text</key>
+			<string>70AFB586-A1F3-4A85-9EB7-E23DD3B4118B</string>
+		</dict>
+	</dict>
 	<key>HapticFeedbackForEsc</key>
 	<false/>
 	<key>HideMenuBarInFullscreen</key>
@@ -902,11 +914,11 @@
 	<key>NSWindow Frame SUStatusFrame</key>
 	<string>-1480 1016 400 129 -2560 50 2560 1417 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
-	<string>-1590 818 620 392 -2560 50 2560 1417 </string>
+	<string>410 363 620 392 0 0 1440 877 </string>
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>48 482 928 394 0 0 1440 877 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>-1277 50 1274 1417 -2560 50 2560 1417 </string>
+	<string>-2560 50 2560 1417 -2560 50 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>0 410 810 467 0 0 1440 877 </string>
 	<key>NeverWarnAboutShortLivedSessions_70AFB586-A1F3-4A85-9EB7-E23DD3B4118B</key>
@@ -1626,6 +1638,8 @@
 			<true/>
 			<key>Shortcut</key>
 			<string></string>
+			<key>Show Mark Indicators</key>
+			<false/>
 			<key>Show Status Bar</key>
 			<true/>
 			<key>Silence Bell</key>
@@ -1658,19 +1672,15 @@
 				<array>
 					<dict>
 						<key>class</key>
-						<string>iTermStatusBarClockComponent</string>
+						<string>iTermStatusBarUsernameComponent</string>
 						<key>configuration</key>
 						<dict>
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.29999999999999999</real>
+								<real>0.050000000000000003</real>
 								<key>base: priority</key>
-								<real>4</real>
-								<key>format</key>
-								<string>M/dd h:mm</string>
-								<key>localize</key>
-								<integer>1</integer>
+								<real>5</real>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -1709,15 +1719,17 @@
 					</dict>
 					<dict>
 						<key>class</key>
-						<string>iTermStatusBarHostnameComponent</string>
+						<string>iTermStatusBarSwiftyStringComponent</string>
 						<key>configuration</key>
 						<dict>
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.5</real>
+								<real>0.050000000000000003</real>
 								<key>base: priority</key>
 								<real>5</real>
+								<key>expression</key>
+								<string>aws_profile: \(user.aws_profile)</string>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -1736,35 +1748,24 @@
 							<dict>
 								<key>algorithm</key>
 								<integer>0</integer>
-								<key>background color</key>
-								<dict>
-									<key>Alpha Component</key>
-									<real>1</real>
-									<key>Blue Component</key>
-									<real>0.45882353186607361</real>
-									<key>Color Space</key>
-									<string>sRGB</string>
-									<key>Green Component</key>
-									<real>0.32941177487373352</real>
-									<key>Red Component</key>
-									<real>0.35294118523597717</real>
-								</dict>
-								<key>font</key>
-								<string>.AppleSystemUIFont 12</string>
 							</dict>
 						</dict>
 					</dict>
 					<dict>
 						<key>class</key>
-						<string>iTermStatusBarUsernameComponent</string>
+						<string>iTermStatusBarWorkingDirectoryComponent</string>
 						<key>configuration</key>
 						<dict>
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.29999999999999999</real>
+								<real>0.10000000000000001</real>
 								<key>base: priority</key>
 								<real>5</real>
+								<key>maxwidth</key>
+								<real>+infinity</real>
+								<key>minwidth</key>
+								<real>0.0</real>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -1803,19 +1804,21 @@
 					</dict>
 					<dict>
 						<key>class</key>
-						<string>iTermStatusBarWorkingDirectoryComponent</string>
+						<string>iTermStatusBarGitComponent</string>
 						<key>configuration</key>
 						<dict>
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.29999999999999999</real>
+								<real>0.10000000000000001</real>
 								<key>base: priority</key>
 								<real>5</real>
+								<key>iTermStatusBarGitComponentPollingIntervalKey</key>
+								<real>2</real>
 								<key>maxwidth</key>
 								<real>+infinity</real>
 								<key>minwidth</key>
-								<real>0.0</real>
+								<integer>0</integer>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -1860,11 +1863,11 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.29999999999999999</real>
+								<real>0.050000000000000003</real>
 								<key>base: priority</key>
 								<real>5</real>
 								<key>maxwidth</key>
-								<real>+infinity</real>
+								<real>0.0</real>
 								<key>minwidth</key>
 								<real>0.0</real>
 								<key>shared text color</key>
@@ -1885,21 +1888,6 @@
 							<dict>
 								<key>algorithm</key>
 								<integer>0</integer>
-								<key>background color</key>
-								<dict>
-									<key>Alpha Component</key>
-									<real>1</real>
-									<key>Blue Component</key>
-									<real>0.45882353186607361</real>
-									<key>Color Space</key>
-									<string>sRGB</string>
-									<key>Green Component</key>
-									<real>0.32941177487373352</real>
-									<key>Red Component</key>
-									<real>0.35294118523597717</real>
-								</dict>
-								<key>font</key>
-								<string>.AppleSystemUIFont 12</string>
 							</dict>
 						</dict>
 					</dict>
@@ -1950,24 +1938,33 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.3.2</string>
-		<string>3.2.9</string>
+		<string>3.3.6</string>
+		<string>3.3.4</string>
 		<string>3.3.1</string>
+		<string>3.3.3</string>
 		<string>3.3.0</string>
+		<string>3.2.9</string>
+		<string>3.3.2</string>
 	</array>
+	<key>NoSyncCommandHistoryHasEverBeenUsed</key>
+	<true/>
 	<key>NoSyncFrame_SharedPreferences</key>
 	<dict>
 		<key>screenFrame</key>
 		<string>{{-2560, 50}, {2560, 1440}}</string>
 		<key>topLeft</key>
-		<string>{-1069, 823}</string>
+		<string>{-2179, 1033}</string>
 	</dict>
 	<key>NoSyncHaveWarnedAboutPasteConfirmationChange</key>
 	<true/>
+	<key>NoSyncInstallUtilitiesPackage</key>
+	<true/>
+	<key>NoSyncInstallUtilitiesPackage_selection</key>
+	<integer>0</integer>
 	<key>NoSyncInstallationId</key>
 	<string>6000D920-4050-41F0-AA7E-663559C9D3C7</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>5</integer>
+	<integer>12</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2038,6 +2035,14 @@
 				<true/>
 				<key>name</key>
 				<string>id</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
+				<string>user.aws_profile</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -2328,6 +2333,14 @@
 				<key>isTerminal</key>
 				<true/>
 				<key>name</key>
+				<string>currentTab.currentSession.user.aws_profile</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
 				<string>currentTab.currentSession.terminalWindowName</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
@@ -2337,6 +2350,14 @@
 				<true/>
 				<key>name</key>
 				<string>currentTab.currentSession.terminalIconName</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
+				<string>currentTab.currentSession.lastCommand</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -2473,6 +2494,22 @@
 			</dict>
 			<dict>
 				<key>isTerminal</key>
+				<false/>
+				<key>name</key>
+				<string>title</string>
+				<key>nonterminalContext</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
+				<string>title</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
 				<true/>
 				<key>name</key>
 				<string>tmuxWindowTitle</string>
@@ -2484,6 +2521,14 @@
 				<true/>
 				<key>name</key>
 				<string>currentSession.presentationName</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
+				<string>currentSession.user.aws_profile</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -2674,16 +2719,16 @@
 	</array>
 	<key>NoSyncSearchHistory2</key>
 	<array>
-		<string>removejjjjjj</string>
-		<string>pushg</string>
-		<string>allow mes</string>
-		<string>allow meo</string>
-		<string>admin</string>
+		<string>apra</string>
+		<string>tags</string>
+		<string>docker</string>
+		<string>extractor</string>
+		<string>null_res</string>
+		<string>null_reos</string>
+		<string>dekra</string>
+		<string>f$kklll</string>
+		<string>datadog</string>
 		<string>jumpcloud</string>
-		<string>lambda</string>
-		<string>terraform</string>
-		<string>robins</string>
-		<string>public</string>
 	</array>
 	<key>NoSyncSuppressRestartSessionConfirmationAlert</key>
 	<true/>
@@ -2730,6 +2775,8 @@
 	</dict>
 	<key>PrefsCustomFolder</key>
 	<string>/Users/robinyonge/vim_and_vigor</string>
+	<key>QuitWhenAllWindowsClosed</key>
+	<true/>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedAlternateAppNameKey</key>
@@ -2739,11 +2786,11 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-09-10T13:11:54Z</date>
+	<date>2019-11-09T14:56:33Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
-	<true/>
+	<false/>
 	<key>SeparateStatusBarsPerPane</key>
 	<true/>
 	<key>ShowFullScreenTabBar</key>
@@ -2762,6 +2809,8 @@
 	<integer>6</integer>
 	<key>TabStyleWithAutomaticOption</key>
 	<integer>5</integer>
+	<key>UseTmuxStatusBar</key>
+	<true/>
 	<key>VisualIndicatorForEsc</key>
 	<false/>
 	<key>WordCharacters</key>
@@ -2769,7 +2818,7 @@
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>iTerm Version</key>
-	<string>3.3.2</string>
+	<string>3.3.6</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
 	<integer>0</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>
