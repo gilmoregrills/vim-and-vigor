@@ -260,3 +260,6 @@ source "$BASH_IT"/bash_it.sh
 
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
+
+export PATH="$HOME/.poetry/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"
