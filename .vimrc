@@ -13,15 +13,8 @@ Plug 'mbbill/undotree'
 Plug 'tpope/vim-surround'
 Plug 'w0rp/ale'
 Plug 'liuchengxu/vim-clap'
-Plug 'tpope/vim-vinegar'
-
-if has('nvim')
-  Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/defx.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
+Plug 'preservim/nerdtree'
+Plug 'hashivim/vim-terraform'
 
 call plug#end()
 
@@ -29,8 +22,10 @@ call plug#end()
 set rtp+=~/tabnine-vim
 
 " nerdtree stuff
-" autocmd vimenter * NERDTree
-" let NERDTreeShowHidden=1
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+let NERDTreeShowHidden=1
+let NERDTreeUseTCD=1
 " let NERDTreeMinimalUI = 1
 " let NERDTreeDirArrows = 1
 
@@ -39,15 +34,17 @@ let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_column_always = 1
 
 " keybindings
-" map <C-n> :NERDTreeToggle<CR>
-" nmap <F1> :NERDTreeToggle<CR>
-" nmap <F2> :NERDComComment<CR>
+map <C-n> :NERDTreeToggle<CR>
+nmap <F1> :NERDTreeToggle<CR>
+nmap <F2> :NERDComComment<CR>
 noremap <PageUp> :tabprevious<CR>
 noremap <PageDown> :tabnext<CR>
 "Remove all trailing whitespace by pressing F5
 nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 cnoreabbrev <expr> W ((getcmdtype() is# ':' && getcmdline() is# 'W')?('w'):('W'))
-command FCD lcd %:p:h
+command TCD tcd %:p:h
+let g:clap_open_action = { 'ctrl-T': 'tab split', 'ctrl-S': 'split', 'ctrl-V': 'vsplit' }
+
 
 syntax enable
 
@@ -89,8 +86,9 @@ set bs=2
 " let g:netrw_liststyle = 1
 " let g:netrw_browse_split = 4
 " let g:netrw_altv = 1
-let g:netrw_winsize = 20
-autocmd VimEnter * :Vexplore
+" let g:netrw_winsize = 20
+" autocmd VimEnter * :Vexplore
 
 " set current window/buffer working dir to dir of file?
 autocmd TabNew,TabNewEntered * :tcd %:p:h
+
