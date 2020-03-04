@@ -200,6 +200,7 @@ alias gc="git commit"
 alias gb="git branch"
 alias gch="git checkout"
 alias gResetMaster="git fetch origin && git reset --hard origin/master"
+alias gPruneBranches="git for-each-ref --format '%(refname:short)' refs/heads | grep -v master | xargs git branch -D"
 
 # Terraform
 alias tf="terraform"
@@ -241,6 +242,8 @@ alias pcurl='curl --silent -o /dev/null -v -H "Pragma: akamai-x-cache-on, akamai
 alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
 alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
 
+alias gitTempShort='git checkout master && git pull origin master && git checkout -b INFRA-1566 && git add Jenkinsfile && git commit -m "add if-jenkins2 check" && git push origin INFRA-1566'
+
 #
 # startup script:
 #
@@ -263,3 +266,5 @@ test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shel
 
 export PATH="$HOME/.poetry/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
+
+export PATH="$HOME/.cargo/bin:$PATH"
