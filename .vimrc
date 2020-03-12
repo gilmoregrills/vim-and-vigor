@@ -44,7 +44,7 @@ noremap <PageDown> :tabnext<CR>
 nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 cnoreabbrev <expr> W ((getcmdtype() is# ':' && getcmdline() is# 'W')?('w'):('W'))
 command TCD tcd %:p:h
-let g:clap_open_action = { 'ctrl-T': 'tab split', 'ctrl-S': 'split', 'ctrl-V': 'vsplit' }
+let g:clap_open_action = { 'ctrl-t': 'tab split', 'ctrl-s': 'split', 'ctrl-v': 'vsplit' }
 
 
 syntax enable
