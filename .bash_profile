@@ -28,31 +28,8 @@ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 #GNU sed/find etc
 export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
 
-
-# Set Xterm/screen/Tmux title with only a short hostname.
-# Uncomment this (or set SHORT_HOSTNAME to something else),
-# Will otherwise fall back on $HOSTNAME.
-#export SHORT_HOSTNAME=$(hostname -s)
-
-# Set Xterm/screen/Tmux title with only a short username.
-# Uncomment this (or set SHORT_USER to something else),
-# Will otherwise fall back on $USER.
-#export SHORT_USER=${USER:0:8}
-
-# Set Xterm/screen/Tmux title with shortened command and directory.
-# Uncomment this to set.
-#export SHORT_TERM_LINE=true
-
-# Set vcprompt executable path for scm advance info in prompt (demula theme)
-# https://github.com/djl/vcprompt
-#export VCPROMPT_EXECUTABLE=~/.vcprompt/bin/vcprompt
-
-# (Advanced): Uncomment this to make Bash-it reload itself automatically
-# after enabling or disabling aliases, plugins, and completions.
-# export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
-
-# Uncomment this to make Bash-it create alias reload.
-# export BASH_IT_RELOAD_LEGACY=1
+# load zoxide 
+eval "$(zoxide init bash)"
 
 #
 # Functions:
@@ -68,7 +45,7 @@ function awsip(){
 
 function gAddKey() {
   eval "$(ssh-agent)"
-  ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable
+  ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable ~/.ssh/liebkind-root
 };
 
 function unset_aws_creds(){
@@ -78,6 +55,9 @@ function unset_aws_creds(){
   unset AWS_ACCESS_KEY_ID
   unset AWS_DEFAULT_PROFILE
   unset ASSUMED_ROLE
+  unset AWS_PROFILE
+  unset SAML2AWS_PROFILE
+  unset AWS_CREDENTIAL_EXPIRATION
 };
 
 # pass a profile name and it will export the keys
@@ -90,6 +70,9 @@ function set_aws_keys() {
   export AWS_SECRET_ACCESS_KEY=$secret;
   export AWS_SESSION_TOKEN=$session;
   export AWS_SECURITY_TOKEN=$security;
+  export AWS_DEFAULT_PROFILE=${1};
+  export AWS_PROFILE=${1};
+  export SAML2AWS_PROFILE=${1};
 };
 
 function iterm2_set_user_vars() {
@@ -110,7 +93,6 @@ function awsSetProfile(){
             echo done
             break
           elif [[ "${vars[*]}" == *"$opt"* ]]; then
-            export AWS_DEFAULT_PROFILE=$opt;
             iterm2_set_user_vars;
             set_aws_keys $opt;
             #TODO: add nicer output here from get-user and get-caller-identity
@@ -199,33 +181,60 @@ alias ga="git add"
 alias gc="git commit"
 alias gb="git branch"
 alias gch="git checkout"
-alias gResetMaster="git fetch origin && git reset --hard origin/master"
+alias gchm="git checkout master && git fetch"
+alias gpm="git pull origin master"
+alias gresetm="git fetch origin && git reset --hard origin/master"
 alias gPruneBranches="git for-each-ref --format '%(refname:short)' refs/heads | grep -v master | xargs git branch -D"
 
 # Terraform
 alias tf="terraform"
 alias tf11="/usr/local/opt/terraform@0.11/bin/terraform"
 alias terraform@0.11="/usr/local/opt/terraform@0.11/bin/terraform"
+alias tf-fmt="terraform fmt -recursive ."
 
 # AWS etc
-alias awsProdSamlLogin="saml2aws login --session-duration 28000 --profile saml-prod --role arn:aws:iam::635780325939:role/saml-roles/infrastructure && saml2aws script --profile saml-prod"
-alias awsSharedSamlLogin="saml2aws login --session-duration 28000 --profile saml-shared --role arn:aws:iam::608178844183:role/saml-roles/infrastructure && saml2aws script --profile saml-shared"
-alias awsMasterSamlLogin="saml2aws login --session-duration 28000 --profile saml-master --role arn:aws:iam::171004938551:role/infrastructure && saml2aws script --profile saml-master"
+alias awsProdSamlLogin="saml2aws login --idp-account=tractableai && saml2aws script --profile tractableai"
+alias awsProdEUSamlLogin="saml2aws login --idp-account=tractableai-prod-euce1 && saml2aws script --profile tractableai-prod-euce1"
+alias awsProdUSSamlLogin="saml2aws login --idp-account=tractableai-prod-use1 && saml2aws script --profile tractableai-prod-use1"
+alias awsProdJPSamlLogin="saml2aws login --idp-account=tractableai-prod-apne1 && saml2aws script --profile tractableai-prod-apne1"
+alias awsSharedSamlLogin="saml2aws login --idp-account=tractableai-shared && saml2aws script --profile tractableai-shared"
+alias awsMasterSamlLogin="saml2aws login --idp-account=tractableai-master && saml2aws script --profile tractableai-master"
 
 # Kubernetes
 alias k="kubectl"
 alias kuebctl="kubectl" # most common typo lmao
-alias kontext="kubectl config use-context" # switch context and print namespaces to test
 alias kns="kubectl get ns"
+
+alias eksDevSetup="aws eks update-kubeconfig --region=eu-west-1 --name=k8s-dev --alias=dev --profile=tractableai"
+alias eksIntegSetup="aws eks update-kubeconfig --region=eu-west-2 --name=k8s-staging-eu --alias=staging-eu --profile=tractableai"
+alias eksProdEUSetup="aws eks update-kubeconfig --region=eu-central-1 --name=k8s-prod-eu --alias=prod-eu --profile=tractableai-prod-euce1"
+alias eksProdUSSetup="aws eks update-kubeconfig --region=us-east-1 --name=k8s-prod-us --alias=prod-us --profile=tractableai-prod-use1"
+alias eksProdJPSetup="aws eks update-kubeconfig --region=ap-northeast-1 --name=k8s-prod-jp --alias=prod-jp --profile=tractableai-prod-apne1"
 
 # Docker
 alias d="docker"
 alias dockerKillZombies="docker ps | grep hours | awk '{print $1}' | xargs docker kill"
 
+function dockerRemote() {
+  export DOCKER_HOST=ssh://ec2-user@10.5.67.80
+  eval "$(ssh-agent)"
+  ssh-add ~/.ssh/mesos_integ-eu-west-2
+};
+
+function dockerLocal() {
+  unset DOCKER_HOST
+};
+
+
 # thefuck
 eval "$(thefuck --alias)"
 
 # Easier navigation: .., ..., ...., ....., ~ and -
+# alias cd="z"
+# alias cdi="zi"
+# alias cdq="zq"
+# alias cda="za"
+# alias cdr="zr"
 alias ls="ls -G"
 alias ..="cd .."
 alias ...="cd ../.."
@@ -244,6 +253,9 @@ alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall F
 
 alias gitTempShort='git checkout master && git pull origin master && git checkout -b INFRA-1566 && git add Jenkinsfile && git commit -m "add if-jenkins2 check" && git push origin INFRA-1566'
 
+# misc
+alias isabelle='curl https://pastebin.com/raw/1qRgMXn5'
+
 #
 # startup script:
 #
@@ -257,14 +269,13 @@ gAddKey
 # load commonly-used secrets as envvars
 source /Users/robinyonge/.bash_secrets
 
-
 # Load Bash It
 source "$BASH_IT"/bash_it.sh
 
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
-
 export PATH="$HOME/.poetry/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
-
 export PATH="$HOME/.cargo/bin:$PATH"
+export PATH=$PATH:/Users/robinyonge/code/git/tractable/cli-tools/bin
+export PATH=$PATH:/Users/robinyonge/.kafka/current/bin
