@@ -5,28 +5,14 @@ export BASH_IT="/Users/robinyonge/.bash_it"
 # location /.bash_it/themes/
 export BASH_IT_THEME='robin'
 
-# (Advanced): Change this to the name of your remote repo if you
-# cloned bash-it with a remote other than origin such as `bash-it`.
-# export BASH_IT_REMOTE='bash-it'
-
 # Your place for hosting Git repos. I use this for private repos.
 export GIT_HOSTING='git@git.domain.com'
 
 # Don't check mail when opening terminal.
 unset MAILCHECK
 
-# Set this to the command you use for todo.txt-cli
-export TODO="t"
-
 # Set this to false to turn off version control status checking within the prompt for all themes
 export SCM_CHECK=true
-
-# GOLANG stuff:
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
-
-#GNU sed/find etc
-export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
 
 # load zoxide 
 eval "$(zoxide init bash)"
@@ -171,8 +157,6 @@ alias vim="nvim"
 alias sed="gsed"
 alias cssh="csshx"
 alias idGroups="id -a | sed 's|,|\n|g'"
-alias weatherAtHome="curl wttr.in/Stepney+Green+London"
-alias weather="curl wttr.in"
 
 # Git:
 alias g="git"
@@ -201,22 +185,13 @@ alias awsSharedSamlLogin="saml2aws login --profile=tractableai-shared --idp-acco
 alias awsMasterSamlLogin="saml2aws login --profile=tractableai-master --idp-account=tractableai-master && saml2aws script --profile tractableai-master"
 
 # Kubernetes
-alias k="kubectl"
 alias kuebctl="kubectl" # most common typo lmao
 alias kns="kubectl get ns"
 alias kgp="kubectl get pods"
-alias kgpa="kubectl get pods --all-namespaces"
 alias kak="kubectl apply -k"
 alias kaf="kubectl apply -f"
-alias kb="kustomize build"
 export MINIKUBE_IN_STYLE=1
 export KUBE_EDITOR=nvim
-
-alias eksDevSetup="aws eks update-kubeconfig --region=eu-west-1 --name=k8s-dev --alias=dev --profile=tractableai"
-alias eksIntegSetup="aws eks update-kubeconfig --region=eu-west-2 --name=k8s-staging-eu --alias=staging-eu --profile=tractableai"
-alias eksProdEUSetup="aws eks update-kubeconfig --region=eu-central-1 --name=k8s-prod-eu --alias=prod-eu --profile=tractableai-prod-euce1"
-alias eksProdUSSetup="aws eks update-kubeconfig --region=us-east-1 --name=k8s-prod-us --alias=prod-us --profile=tractableai-prod-use1"
-alias eksProdJPSetup="aws eks update-kubeconfig --region=ap-northeast-1 --name=k8s-prod-jp --alias=prod-jp --profile=tractableai-prod-apne1"
 
 # Docker
 alias d="docker"
@@ -233,11 +208,6 @@ function dockerLocal() {
 };
 
 # Easier navigation: .., ..., ...., ....., ~ and -
-# alias cd="z"
-# alias cdi="zi"
-# alias cdq="zq"
-# alias cda="za"
-# alias cdr="zr"
 alias ls="ls -G"
 alias ..="cd .."
 alias ...="cd ../.."
@@ -246,15 +216,9 @@ alias .....="cd ../../../.."
 alias -- -="cd -"                  # Go to previous dir with -
 alias cd.='cd $(readlink -f .)'    # Go to real dir (i.e. if current dir is linked)
 
-# Network
-alias ipl="echo \"private ip:\"; ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1';echo \"public ip:\"; curl whatismyip.akamai.com; echo"
-alias pcurl='curl --silent -o /dev/null -v -H "Pragma: akamai-x-cache-on, akamai-x-cache-remote-on, akamai-x-check-cacheable, akamai-x-get-cache-key, akamai-x-get-extracted-values, akamai-x-get-nonces, akamai-x-get-ssl-client-session-id, akamai-x-get-true-cache-key, akamai-x-serial-no"'
-
 # OSX
 alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
 alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
-
-alias gitTempShort='git checkout master && git pull origin master && git checkout -b INFRA-1566 && git add Jenkinsfile && git commit -m "add if-jenkins2 check" && git push origin INFRA-1566'
 
 # misc
 alias isabelle='curl https://pastebin.com/raw/1qRgMXn5'
@@ -280,15 +244,17 @@ test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shel
 eval "$(jira --completion-script-bash)"
 
 # PATH garbage
-
 export PATH="$HOME/.poetry/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH=$PATH:/Users/robinyonge/code/git/tractable/cli-tools/bin
 export PATH=$PATH:/Users/robinyonge/.kafka/current/bin
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+export GOPATH=$HOME/go
+export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
+export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
 
 # Load Bash It
 source "$BASH_IT"/bash_it.sh
 
-export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
