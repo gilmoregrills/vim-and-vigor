@@ -193,17 +193,24 @@ alias terraform@0.11="/usr/local/opt/terraform@0.11/bin/terraform"
 alias tf-fmt="terraform fmt -recursive ."
 
 # AWS etc
-alias awsProdSamlLogin="saml2aws login --idp-account=tractableai && saml2aws script --profile tractableai"
-alias awsProdEUSamlLogin="saml2aws login --idp-account=tractableai-prod-euce1 && saml2aws script --profile tractableai-prod-euce1"
-alias awsProdUSSamlLogin="saml2aws login --idp-account=tractableai-prod-use1 && saml2aws script --profile tractableai-prod-use1"
-alias awsProdJPSamlLogin="saml2aws login --idp-account=tractableai-prod-apne1 && saml2aws script --profile tractableai-prod-apne1"
-alias awsSharedSamlLogin="saml2aws login --idp-account=tractableai-shared && saml2aws script --profile tractableai-shared"
-alias awsMasterSamlLogin="saml2aws login --idp-account=tractableai-master && saml2aws script --profile tractableai-master"
+alias awsProdSamlLogin="saml2aws login --profile=tractableai --idp-account=tractableai && saml2aws script --profile tractableai"
+alias awsProdEUSamlLogin="saml2aws login --profile=tractableai-prod-euce1 --idp-account=tractableai-prod-euce1 && saml2aws script --profile tractableai-prod-euce1"
+alias awsProdUSSamlLogin="saml2aws login --profile=tractableai-prod-use1 --idp-account=tractableai-prod-use1 && saml2aws script --profile tractableai-prod-use1"
+alias awsProdJPSamlLogin="saml2aws login --profile=tractableai-prod-apne1 --idp-account=tractableai-prod-apne1 && saml2aws script --profile tractableai-prod-apne1"
+alias awsSharedSamlLogin="saml2aws login --profile=tractableai-shared --idp-account=tractableai-shared && saml2aws script --profile tractableai-shared"
+alias awsMasterSamlLogin="saml2aws login --profile=tractableai-master --idp-account=tractableai-master && saml2aws script --profile tractableai-master"
 
 # Kubernetes
 alias k="kubectl"
 alias kuebctl="kubectl" # most common typo lmao
 alias kns="kubectl get ns"
+alias kgp="kubectl get pods"
+alias kgpa="kubectl get pods --all-namespaces"
+alias kak="kubectl apply -k"
+alias kaf="kubectl apply -f"
+alias kb="kustomize build"
+export MINIKUBE_IN_STYLE=1
+export KUBE_EDITOR=nvim
 
 alias eksDevSetup="aws eks update-kubeconfig --region=eu-west-1 --name=k8s-dev --alias=dev --profile=tractableai"
 alias eksIntegSetup="aws eks update-kubeconfig --region=eu-west-2 --name=k8s-staging-eu --alias=staging-eu --profile=tractableai"
@@ -224,10 +231,6 @@ function dockerRemote() {
 function dockerLocal() {
   unset DOCKER_HOST
 };
-
-
-# thefuck
-eval "$(thefuck --alias)"
 
 # Easier navigation: .., ..., ...., ....., ~ and -
 # alias cd="z"
@@ -256,6 +259,9 @@ alias gitTempShort='git checkout master && git pull origin master && git checkou
 # misc
 alias isabelle='curl https://pastebin.com/raw/1qRgMXn5'
 
+# jira
+alias jls='jira ls -a robin.yonge'
+
 #
 # startup script:
 #
@@ -269,13 +275,20 @@ gAddKey
 # load commonly-used secrets as envvars
 source /Users/robinyonge/.bash_secrets
 
-# Load Bash It
-source "$BASH_IT"/bash_it.sh
-
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+eval "$(jira --completion-script-bash)"
+
+# PATH garbage
 
 export PATH="$HOME/.poetry/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH=$PATH:/Users/robinyonge/code/git/tractable/cli-tools/bin
 export PATH=$PATH:/Users/robinyonge/.kafka/current/bin
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+# Load Bash It
+source "$BASH_IT"/bash_it.sh
+
+export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"

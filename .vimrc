@@ -33,6 +33,9 @@ let NERDTreeUseTCD=1
 let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_column_always = 1
 
+" hashivim options
+let g:terraform_fmt_on_save=1
+
 " keybindings
 map <C-n> :NERDTreeToggle<CR>
 nmap <F1> :NERDTreeToggle<CR>
@@ -48,6 +51,7 @@ let g:clap_open_action = { 'ctrl-t': 'tab split', 'ctrl-s': 'split', 'ctrl-v': '
 
 
 syntax enable
+au BufNewFile,BufRead Jenkinsfile setf groovy
 
 " themeing:
 set termguicolors
