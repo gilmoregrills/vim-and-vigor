@@ -1,87 +1,56 @@
-brew install automake
-brew install aws-iam-authenticator
-brew install avr-gcc
-brew install avr-gcc@7
-brew install avrdude
 brew install awscli
 brew install bash
 brew install bash-completion
-brew install build-essential
 brew install cask
-brew install cfssl
-brew install coreutils
-brew install dark-mode
-brew install dep
-brew install dfu-programmer
-brew install docker-machine
-brew install docker-machine-driver-xhyve
-brew install eksctl
-brew install ffmpeg
-brew install flac
-brew install fluxctl
-brew install gdbm
-brew install gmp
-brew install gnu-sed
 brew install go
-brew install goreleaser
-brew install grep
-brew install hadolint
-brew install htop
-brew install httpie
 brew install jq
 brew install kubectx
 brew install kubernetes-cli
-brew install kubeseal
 brew install kustomize
-brew install make
-brew install netcat
-brew install nmap
+brew install cmake
 brew install node
-brew install oniguruma
-brew install openssh
-brew install openssl
-brew install packer
-brew install pwgen
 brew install python3
-brew install readline
-brew install shellcheck
 brew install speedtest-cli
-brew install sqlite
 brew install telnet
 brew install terraform
-brew install tesseract
 brew install thefuck
-brew install tmux
 brew install tree
 brew install vim
 brew install watch
-brew install watchman
 brew install wget
-brew install yarn
+brew install ansible
+brew install argocd
+brew install saml2aws
+brew install dcos-cli
+brew install gnu-sed
+brew install kubeseal
+brew install neovim
+brew install openssh
+brew install openssl
+brew install screen
+brew install tflint
+brew install zoxide
+brew install go-jira
 
 
 
-# brew cask install \
-#     1password \
-#     alfred \
-#     google-backup-and-sync \
-#     google-cloud-sdk \
-#     google-chrome \
-#     keybase \
-#     spotify \
-#     sublime-text \
-#     virtualbox\
-#     1password-cli \
-#     discord \
-#     gpg-suite \
-#     lulu \
-#     slack \
-#     steam \
-#     typora \
-#     whatsapp\
-#     docker \
-#     iterm2 \
-#     postman \
-#     spark \
-#     sublime-merge \
-#     vagrant
+brew install --cask 1password
+brew install --cask alfred
+brew install --cask spotify
+brew install --cask 1password-cli
+brew install --cask discord
+brew install --cask whatsapp
+brew install --cask docker
+brew install --cask iterm2
+brew install --cask amazon-chime
+brew install --cask fantastical
+brew install --cask java
+brew install --cask pgadmin4
+brew install --cask rectangle
+brew install --cask trailer
+brew install --cask zoom
+brew install --cask zoomus
+brew install --cask notion
+brew install --cask hey
+brew install --cask openvpn-connect
+brew install --cask messenger
