@@ -15,11 +15,9 @@ Plug 'w0rp/ale'
 Plug 'liuchengxu/vim-clap'
 Plug 'preservim/nerdtree'
 Plug 'hashivim/vim-terraform'
+Plug 'zxqfl/tabnine-vim'
 
 call plug#end()
-
-" Add tabnine
-set rtp+=~/tabnine-vim
 
 " nerdtree stuff
 autocmd StdinReadPre * let s:std_in=1

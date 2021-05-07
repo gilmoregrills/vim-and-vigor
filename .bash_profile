@@ -29,6 +29,10 @@ function awsip(){
   aws ec2 describe-instances --region $1 --instance-id $2 --query 'Reservations[].Instances[].PrivateIpAddress' | tail -n 2 | head -n 1 | awk -F\" '{print $2}'
 };
 
+function create-state-lock(){
+  aws dynamodb create-table --region eu-west-2 --profile tractableai-shared --table-name $1 --billing-mode PAY_PER_REQUEST --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH
+};
+
 function gAddKey() {
   eval "$(ssh-agent)"
   ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable ~/.ssh/liebkind-root
@@ -174,6 +178,7 @@ alias gPruneBranches="git for-each-ref --format '%(refname:short)' refs/heads | 
 alias tf="terraform"
 alias tf11="/usr/local/opt/terraform@0.11/bin/terraform"
 alias terraform@0.11="/usr/local/opt/terraform@0.11/bin/terraform"
+alias terraform@0.14="/usr/local/opt/terraform@0.14/bin/terraform"
 alias tf-fmt="terraform fmt -recursive ."
 
 # AWS etc
@@ -183,6 +188,7 @@ alias awsProdUSSamlLogin="saml2aws login --profile=tractableai-prod-use1 --idp-a
 alias awsProdJPSamlLogin="saml2aws login --profile=tractableai-prod-apne1 --idp-account=tractableai-prod-apne1 && saml2aws script --profile tractableai-prod-apne1"
 alias awsSharedSamlLogin="saml2aws login --profile=tractableai-shared --idp-account=tractableai-shared && saml2aws script --profile tractableai-shared"
 alias awsMasterSamlLogin="saml2aws login --profile=tractableai-master --idp-account=tractableai-master && saml2aws script --profile tractableai-master"
+alias awsSandboxSamlLogin="saml2aws login --profile=tractableai-sandbox --idp-account=tractableai-sandbox && saml2aws script --profile tractableai-sandbox"
 
 # Kubernetes
 alias kuebctl="kubectl" # most common typo lmao
@@ -243,6 +249,9 @@ test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shel
 
 eval "$(jira --completion-script-bash)"
 
+eval "$(thefuck --alias)"
+alias oops='fuck'
+
 # PATH garbage
 export PATH="$HOME/.poetry/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
@@ -258,3 +267,6 @@ export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
 # Load Bash It
 source "$BASH_IT"/bash_it.sh
 
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
