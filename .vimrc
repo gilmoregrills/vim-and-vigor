@@ -15,9 +15,10 @@ Plug 'w0rp/ale'
 Plug 'liuchengxu/vim-clap'
 Plug 'preservim/nerdtree'
 Plug 'hashivim/vim-terraform'
-Plug 'zxqfl/tabnine-vim'
 
 call plug#end()
+
+set rtp+=/Users/robinyonge/code/git/codota/tabnine-vim
 
 " nerdtree stuff
 autocmd StdinReadPre * let s:std_in=1
@@ -116,3 +117,5 @@ call remote#host#Register('tweet', 'x', function('s:Requiretweet'))
 call remote#host#RegisterPlugin('tweet', '0', [
     \ {'type': 'function', 'name': 'Tweet', 'sync': 1, 'opts': {}},
     \ ])
+
+source ~/.vim/init.vim

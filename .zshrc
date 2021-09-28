@@ -1,21 +1,5 @@
-# Path to the bash it configuration
-export BASH_IT="/Users/robinyonge/.bash_it"
-
-# Lock and Load a custom theme file
-# location /.bash_it/themes/
-export BASH_IT_THEME='robin'
-
-# Your place for hosting Git repos. I use this for private repos.
-export GIT_HOSTING='git@git.domain.com'
-
-# Don't check mail when opening terminal.
-unset MAILCHECK
-
-# Set this to false to turn off version control status checking within the prompt for all themes
-export SCM_CHECK=true
-
 # load zoxide 
-eval "$(zoxide init bash)"
+eval "$(zoxide init zsh)"
 
 #
 # Functions:
@@ -36,6 +20,10 @@ function create-state-lock(){
 function gAddKey() {
   eval "$(ssh-agent)"
   ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable ~/.ssh/liebkind-root
+};
+
+function iterm2_set_user_vars() {
+  iterm2_set_user_var aws_profile "$AWS_DEFAULT_PROFILE"
 };
 
 function unset_aws_creds(){
@@ -65,10 +53,6 @@ function set_aws_keys() {
   export SAML2AWS_PROFILE=${1};
 };
 
-function iterm2_set_user_vars() {
-  iterm2_set_user_var aws_profile "$AWS_DEFAULT_PROFILE"
-};
-
 function awsSetProfile(){
   unset_aws_creds
   if [ -z "$1" ]
@@ -83,7 +67,6 @@ function awsSetProfile(){
             echo done
             break
           elif [[ "${vars[*]}" == *"$opt"* ]]; then
-            iterm2_set_user_vars;
             set_aws_keys $opt;
             #TODO: add nicer output here from get-user and get-caller-identity
             aws configure list;
@@ -95,7 +78,6 @@ function awsSetProfile(){
       done
     else
       export AWS_DEFAULT_PROFILE=$1;
-      iterm2_set_user_vars;
       echo "Current profile is:";
       aws configure list;
   fi
@@ -161,6 +143,7 @@ alias vim="nvim"
 alias sed="gsed"
 alias cssh="csshx"
 alias idGroups="id -a | sed 's|,|\n|g'"
+alias find="gfind"
 
 # Git:
 alias g="git"
@@ -176,9 +159,6 @@ alias gPruneBranches="git for-each-ref --format '%(refname:short)' refs/heads | 
 
 # Terraform
 alias tf="terraform"
-alias tf11="/usr/local/opt/terraform@0.11/bin/terraform"
-alias terraform@0.11="/usr/local/opt/terraform@0.11/bin/terraform"
-alias terraform@0.14="/usr/local/opt/terraform@0.14/bin/terraform"
 alias tf-fmt="terraform fmt -recursive ."
 
 # AWS etc
@@ -189,28 +169,25 @@ alias awsProdJPSamlLogin="saml2aws login --profile=tractableai-prod-apne1 --idp-
 alias awsSharedSamlLogin="saml2aws login --profile=tractableai-shared --idp-account=tractableai-shared && saml2aws script --profile tractableai-shared"
 alias awsMasterSamlLogin="saml2aws login --profile=tractableai-master --idp-account=tractableai-master && saml2aws script --profile tractableai-master"
 alias awsSandboxSamlLogin="saml2aws login --profile=tractableai-sandbox --idp-account=tractableai-sandbox && saml2aws script --profile tractableai-sandbox"
+alias awsResearchSamlLogin="saml2aws login --profile=tractableai-research --idp-account=tractableai-research && saml2aws script --profile tractableai-research"
+alias awsResearchRoleSharedSamlLogin="saml2aws login --profile=tractableai-shared-research --idp-account=tractableai-shared-research && saml2aws script --profile tractableai-shared-research"
 
 # Kubernetes
 alias kuebctl="kubectl" # most common typo lmao
 alias kns="kubectl get ns"
 alias kgp="kubectl get pods"
-alias kak="kubectl apply -k"
-alias kaf="kubectl apply -f"
 export MINIKUBE_IN_STYLE=1
 export KUBE_EDITOR=nvim
-
-# python
-alias python='python3'
-alias pip='pip3'
 
 # Docker
 alias d="docker"
 alias dockerKillZombies="docker ps | grep hours | awk '{print $1}' | xargs docker kill"
+alias dockerHardReset="docker ps -q | xargs -L1 docker stop && test -z \"$(docker ps -q 2>/dev/null)\" && osascript -e 'quit app \"Docker\"' && open --background -a Docker"
 
 function dockerRemote() {
-  export DOCKER_HOST=ssh://ec2-user@10.5.67.80
+  export DOCKER_HOST=ssh://ubuntu@10.12.3.178
   eval "$(ssh-agent)"
-  ssh-add ~/.ssh/mesos_integ-eu-west-2
+  ssh-add ~/.ssh/est-cr-us.pem
 };
 
 function dockerLocal() {
@@ -240,18 +217,12 @@ alias jls='jira ls -a robin.yonge'
 # startup script:
 #
 
-# write screenshots to dropbox please
-defaults write com.apple.screencapture location /Users/robinyonge/Dropbox/screenshots
-# remap the weird +- key next to 1 to be escape
-hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000064,"HIDKeyboardModifierMappingDst":0x700000029}]}'
 # ssh-add keys for git
 gAddKey
 # load commonly-used secrets as envvars
 source /Users/robinyonge/.bash_secrets
 
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
-
-eval "$(jira --completion-script-bash)"
 
 eval "$(thefuck --alias)"
 alias oops='fuck'
@@ -267,7 +238,63 @@ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 export GOPATH=$HOME/go
 export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
 export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
-export PATH="/opt/homebrew/opt/findutils/libexec/gnubin:$PATH"
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+fpath=($fpath "/Users/robinyonge/.zfunctions")
 
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 export ASDF_HASHICORP_OVERWRITE_ARCH="amd64"
+
+# Spaceship config
+# export SPACESHIP_KUBECONTEXT_PREFIX=ctx 
+export SPACESHIP_KUBECONTEXT_NAMESPACE_SHOW=false
+export SPACESHIP_PROMPT_ORDER=(
+  time          # Time stamps section
+  user          # Username section
+  dir           # Current directory section
+  host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  # hg            # Mercurial section (hg_branch  + hg_status)
+  package       # Package version
+  # gradle        # Gradle section
+  # maven         # Maven section
+  node          # Node.js section
+  # ruby          # Ruby section
+  # elixir        # Elixir section
+  # xcode         # Xcode section
+  # swift         # Swift section
+  golang        # Go section
+  # php           # PHP section
+  # rust          # Rust section
+  # haskell       # Haskell Stack section
+  # julia         # Julia section
+  # docker        # Docker section
+  aws           # Amazon Web Services section
+  # gcloud        # Google Cloud Platform section
+  # venv          # virtualenv section
+  # conda         # conda virtualenv section
+  pyenv         # Pyenv section
+  # dotnet        # .NET section
+  # ember         # Ember.js section
+  kubectl       # Kubectl context section
+  terraform     # Terraform workspace section
+  exec_time     # Execution time
+  line_sep      # Line break
+  # battery       # Battery level and status
+  # vi_mode       # Vi-mode indicator
+  # jobs          # Background jobs indicator
+  exit_code     # Exit code section
+  char          # Prompt character
+)
+
+# Set Spaceship ZSH as a prompt
+autoload -U promptinit; promptinit
+prompt spaceship
+
+# substring history
+source /opt/homebrew/Cellar/zsh-history-substring-search/1.0.2/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+
+# syntax highlighting
+source /Users/robinyonge/code/git/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export PATH="/opt/homebrew/opt/terraform@0.12/bin:$PATH"
+export PATH="/opt/homebrew/opt/terraform@0.12/bin:$PATH"
