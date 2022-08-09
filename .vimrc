@@ -22,11 +22,11 @@ set rtp+=/Users/robinyonge/code/git/codota/tabnine-vim
 
 " nerdtree stuff
 autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 let NERDTreeShowHidden=1
 let NERDTreeUseTCD=1
-" let NERDTreeMinimalUI = 1
-" let NERDTreeDirArrows = 1
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
 
 " ale options
 let g:airline#extensions#ale#enabled = 1
@@ -37,9 +37,10 @@ let g:terraform_fmt_on_save=1
 
 " keybindings
 map <C-n> :NERDTreeToggle<CR>
-nmap <F1> :NERDTreeToggle<CR>
-nmap <F2> :NERDComComment<CR>
-nmap <F3> :Clap files<CR>
+nmap <C-c> :NERDComComment<CR>
+nmap <F1> :Clap filer<CR>
+nmap <F2> :Clap files<CR>
+nmap <F3> :Clap bcommits<CR>
 noremap <PageUp> :tabprevious<CR>
 noremap <PageDown> :tabnext<CR>
 "Remove all trailing whitespace by pressing F5
@@ -47,7 +48,6 @@ nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 cnoreabbrev <expr> W ((getcmdtype() is# ':' && getcmdline() is# 'W')?('w'):('W'))
 command TCD tcd %:p:h
 let g:clap_open_action = { 'ctrl-t': 'tab split', 'ctrl-s': 'split', 'ctrl-v': 'vsplit' }
-
 
 syntax enable
 au BufNewFile,BufRead Jenkinsfile setf groovy
@@ -99,6 +99,9 @@ set bs=2
 autocmd TabNew,TabNewEntered * :tcd %:p:h
 
 
+" go stuff
+let g:go_def_mode='gopls'
+let g:go_info_mode='gopls'
 
 " working on my own nvim plugin in go
 if exists('g:loaded_tweet')
@@ -117,5 +120,7 @@ call remote#host#Register('tweet', 'x', function('s:Requiretweet'))
 call remote#host#RegisterPlugin('tweet', '0', [
     \ {'type': 'function', 'name': 'Tweet', 'sync': 1, 'opts': {}},
     \ ])
+
+set shellcmdflag=-ic
 
 source ~/.vim/init.vim

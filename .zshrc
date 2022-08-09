@@ -1,9 +1,34 @@
 # load zoxide 
 eval "$(zoxide init zsh)"
-
-#
 # Functions:
-#
+function pglogin(){
+  case $1 in
+    dev)
+      export PGUSER=$(op get item --vault INFRA "postgres - eu-west-1" --fields username)
+      export PGPASSWORD=$(op get item --vault INFRA "postgres - eu-west-1" --fields password)
+      ;;
+    integ)
+      export PGUSER=$(op get item --vault INFRA "postgres - eu-west-2" --fields username)
+      export PGPASSWORD=$(op get item --vault INFRA "postgres - eu-west-2" --fields password)
+      ;;
+    eu)
+      export PGUSER=$(op get item --vault INFRA "postgres - eu-central-1" --fields username)
+      export PGPASSWORD=$(op get item --vault INFRA "postgres - eu-central-1" --fields password)
+      ;;
+    us)
+      export PGUSER=$(op get item --vault INFRA "postgres - us-east-1" --fields username)
+      export PGPASSWORD=$(op get item --vault INFRA "postgres - us-east-1" --fields password)
+      ;;
+    jp)
+      export PGUSER=$(op get item --vault INFRA "postgres - ap-northeast-1" --fields username)
+      export PGPASSWORD=$(op get item --vault INFRA "postgres - ap-northeast-1" --fields password)
+      ;;
+  esac
+
+  export PGDATABASE="${2}"
+  export PGHOST="postgres.${1}.tractable.io"
+  pgcli
+}
 
 function awsssh(){
   ssh $(aws ec2 describe-instances --region $1 --instance-id $2 --query 'Reservations[].Instances[].PrivateIpAddress' | tail -n 2 | head -n 1 | awk -F\" '{print $2}')
@@ -20,6 +45,10 @@ function create-state-lock(){
 function gAddKey() {
   eval "$(ssh-agent)"
   ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable ~/.ssh/liebkind-root
+};
+
+function tclone() {
+  git clone git@github.com:tractableai/${1}.git
 };
 
 function iterm2_set_user_vars() {
@@ -129,12 +158,37 @@ function chrome() {
   /usr/bin/open -a "/Applications/Google Chrome.app" "$site";
 };
 
+# usage:
+# jbranch <ISSUE_ID>
+# to checkout a new branch with the issue ID in question
+# and set the ticket to in progress
+function jbranch() {
+  jira progress ${1}
+  git checkout -b ${1}
+  git branch --set-upstream-to origin/${1}
+  return ${1};
+}
+
+# usage:
+# from a pushed branch where branch name == jira ticket run
+# jpr
+function jpr() {
+  ID=$(git rev-parse --abbrev-ref HEAD) 
+  jira pr ${ID}
+  # remove --web and you'll get prompted to fill in title and description in-line
+  gh pr create --web
+}
+
+function GSuiteSA() {
+  export GOOGLE_CLOUD_KEYFILE_JSON=$(aws --profile=tractableai-shared --region=eu-west-2 ssm get-parameter --name /prod/infrastructure/tf-env-gsuite/gsuite/service-account --with-decryption | jq -jr '.Parameter.Value')
+}
+
 #
 # Aliases:
 #
 
 # General:
-alias reload="bash-it reload"
+alias reload="alias ~/.zshrc"
 alias rr="reload"
 alias shebang='echo "#!/usr/bin/env bash"'
 alias typora="open -a typora"
@@ -160,17 +214,21 @@ alias gPruneBranches="git for-each-ref --format '%(refname:short)' refs/heads | 
 # Terraform
 alias tf="terraform"
 alias tf-fmt="terraform fmt -recursive ."
+alias tfplan="terraform plan -no-color"
+alias tfapply="terraform apply -no-color -auto-approve"
 
 # AWS etc
 alias awsProdSamlLogin="saml2aws login --profile=tractableai --idp-account=tractableai && saml2aws script --profile tractableai"
 alias awsProdEUSamlLogin="saml2aws login --profile=tractableai-prod-euce1 --idp-account=tractableai-prod-euce1 && saml2aws script --profile tractableai-prod-euce1"
 alias awsProdUSSamlLogin="saml2aws login --profile=tractableai-prod-use1 --idp-account=tractableai-prod-use1 && saml2aws script --profile tractableai-prod-use1"
 alias awsProdJPSamlLogin="saml2aws login --profile=tractableai-prod-apne1 --idp-account=tractableai-prod-apne1 && saml2aws script --profile tractableai-prod-apne1"
+alias awsStorageSamlLogin="saml2aws login --profile=tractableai-storage --idp-account=tractableai-storage && saml2aws script --profile tractableai-storage"
 alias awsSharedSamlLogin="saml2aws login --profile=tractableai-shared --idp-account=tractableai-shared && saml2aws script --profile tractableai-shared"
 alias awsMasterSamlLogin="saml2aws login --profile=tractableai-master --idp-account=tractableai-master && saml2aws script --profile tractableai-master"
 alias awsSandboxSamlLogin="saml2aws login --profile=tractableai-sandbox --idp-account=tractableai-sandbox && saml2aws script --profile tractableai-sandbox"
 alias awsResearchSamlLogin="saml2aws login --profile=tractableai-research --idp-account=tractableai-research && saml2aws script --profile tractableai-research"
 alias awsResearchRoleSharedSamlLogin="saml2aws login --profile=tractableai-shared-research --idp-account=tractableai-shared-research && saml2aws script --profile tractableai-shared-research"
+alias awsDpProdSamlLogin="saml2aws login --profile=tractableai-data-platform-prod --idp-account=tractableai-data-platform-prod && saml2aws script --profile tractableai-data-platform-prod"
 
 # Kubernetes
 alias kuebctl="kubectl" # most common typo lmao
@@ -202,6 +260,7 @@ alias ....="cd ../../.."
 alias .....="cd ../../../.."
 alias -- -="cd -"                  # Go to previous dir with -
 alias cd.='cd $(readlink -f .)'    # Go to real dir (i.e. if current dir is linked)
+alias ll="exa -la --git"
 
 # OSX
 alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
@@ -209,16 +268,22 @@ alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall F
 
 # misc
 alias isabelle='curl https://pastebin.com/raw/1qRgMXn5'
+alias 1pass='eval $(op signin tractable)'
+alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+alias myip='curl http://whatismyip.akamai.com/'
 
 # jira
 alias jls='jira ls -a robin.yonge'
+
+# ssh
+alias ssh='echo "shh 🤫" && ssh'
 
 #
 # startup script:
 #
 
 # ssh-add keys for git
-gAddKey
+# gAddKey
 # load commonly-used secrets as envvars
 source /Users/robinyonge/.bash_secrets
 
@@ -242,20 +307,36 @@ export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
 eval "$(/opt/homebrew/bin/brew shellenv)"
 fpath=($fpath "/Users/robinyonge/.zfunctions")
 
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-export ASDF_HASHICORP_OVERWRITE_ARCH="amd64"
-
 # Spaceship config
-# export SPACESHIP_KUBECONTEXT_PREFIX=ctx 
-export SPACESHIP_KUBECONTEXT_NAMESPACE_SHOW=false
+
+SPACESHIP_PROMPT_FIRST_PREFIX_SHOW=true
+
+export SPACESHIP_CHAR_SYMBOL="\n ↳ "
+export SPACESHIP_CHAR_SYMBOL_ROOT="\n ↳ ⚠️  "
+export SPACESHIP_CHAR_PREFIX="✨ "
+export SPACESHIP_DIR_PREFIX="📂 "
+export SPACESHIP_GIT_PREFIX="on "
+# export SPACESHIP_GIT_SYMBOL=""
+export SPACESHIP_AWS_SYMBOL="☁️  "
+export SPACESHIP_KUBECTL_PREFIX="at "
+export SPACESHIP_KUBECONTEXT_PREFIX="at "
+export SPACESHIP_KUBECONTEXT_SHOW=true
+export SPACESHIP_KUBECONTEXT_COLOR=green
+export SPACESHIP_KUBECONTEXT_NAMESPACE_SHOW=true
+# export SPACESHIP_CHAR_PREFIXES_SUCCESS=(🙆‍♀️ 💁‍♀️ 🙋‍♀️)
+# export SPACESHIP_CHAR_PREFIXES_FAILURE=(🙅‍♀️ 🙎‍♀️ 🤦‍♀️ 🤷‍♀️)
+
+export SPACESHIP_PROMPT_SEPARATE_LINE=true
+export SPACESHIP_PROMPT_ADD_NEWLINE=true
+
 export SPACESHIP_PROMPT_ORDER=(
-  time          # Time stamps section
-  user          # Username section
+  # time          # Time stamps section
+  # user          # Username section
   dir           # Current directory section
   host          # Hostname section
   git           # Git section (git_branch + git_status)
   # hg            # Mercurial section (hg_branch  + hg_status)
-  package       # Package version
+  # package       # Package version
   # gradle        # Gradle section
   # maven         # Maven section
   node          # Node.js section
@@ -270,16 +351,17 @@ export SPACESHIP_PROMPT_ORDER=(
   # julia         # Julia section
   # docker        # Docker section
   aws           # Amazon Web Services section
-  # gcloud        # Google Cloud Platform section
+  # gcloud        # Google Cloud Platform section
   # venv          # virtualenv section
   # conda         # conda virtualenv section
   pyenv         # Pyenv section
   # dotnet        # .NET section
   # ember         # Ember.js section
   kubectl       # Kubectl context section
-  terraform     # Terraform workspace section
-  exec_time     # Execution time
-  line_sep      # Line break
+  kubectl_context
+  # terraform     # Terraform workspace section
+  # exec_time     # Execution time
+  # line_sep      # Line break
   # battery       # Battery level and status
   # vi_mode       # Vi-mode indicator
   # jobs          # Background jobs indicator
@@ -291,10 +373,17 @@ export SPACESHIP_PROMPT_ORDER=(
 autoload -U promptinit; promptinit
 prompt spaceship
 
-# substring history
-source /opt/homebrew/Cellar/zsh-history-substring-search/1.0.2/share/zsh-history-substring-search/zsh-history-substring-search.zsh
-
 # syntax highlighting
 source /Users/robinyonge/code/git/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-export PATH="/opt/homebrew/opt/terraform@0.12/bin:$PATH"
-export PATH="/opt/homebrew/opt/terraform@0.12/bin:$PATH"
+
+# substring history
+source /opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+bindkey "^[[A" history-beginning-search-backward
+bindkey "^[[B" history-beginning-search-forward
+
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc'; fi

@@ -259,7 +259,6 @@ alias oops='fuck'
 # PATH garbage
 export PATH="$HOME/.poetry/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
 export PATH=$PATH:/Users/robinyonge/code/git/tractable/cli-tools/bin
 export PATH=$PATH:/Users/robinyonge/.kafka/current/bin
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
@@ -271,3 +270,4 @@ export PATH="/opt/homebrew/opt/findutils/libexec/gnubin:$PATH"
 
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 export ASDF_HASHICORP_OVERWRITE_ARCH="amd64"
+. "$HOME/.cargo/env"
