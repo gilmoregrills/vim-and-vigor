@@ -10,5 +10,5 @@ font used everywhere is [dank mono](https://philpl.gumroad.com/l/dank-mono)
 
 The `.vimrc` works with [vim-plug](https://github.com/junegunn/vim-plug) and neovim
 
-the colorscheme used in the iterm json thingy and my vimrc uses a colorscheme named fairyfloss: https://sailorhg.github.io/fairyfloss/
+the colorscheme used in the iterm json thingy and my vimrc is based on a colorscheme named fairyfloss: https://sailorhg.github.io/fairyfloss/
 which is available in most editors!!
