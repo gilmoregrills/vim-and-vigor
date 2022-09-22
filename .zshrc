@@ -193,10 +193,7 @@ function GSuiteSA() {
 #
 
 # General:
-alias reload="alias ~/.zshrc"
-alias rr="reload"
 alias shebang='echo "#!/usr/bin/env bash"'
-alias typora="open -a typora"
 alias watch="watch "
 alias vim="nvim"
 alias sed="gsed"
@@ -288,7 +285,6 @@ alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall 
 alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
 
 # misc
-alias isabelle='curl https://pastebin.com/raw/1qRgMXn5'
 alias 1pass='eval $(op signin tractable)'
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias myip='curl http://whatismyip.akamai.com/'
@@ -337,15 +333,12 @@ export SPACESHIP_CHAR_SYMBOL_ROOT="\n ↳ ⚠️  "
 export SPACESHIP_CHAR_PREFIX="✨ "
 export SPACESHIP_DIR_PREFIX="📂 "
 export SPACESHIP_GIT_PREFIX="on "
-# export SPACESHIP_GIT_SYMBOL=""
 export SPACESHIP_AWS_SYMBOL="☁️  "
 export SPACESHIP_KUBECTL_PREFIX="at "
 export SPACESHIP_KUBECONTEXT_PREFIX="at "
 export SPACESHIP_KUBECONTEXT_SHOW=true
 export SPACESHIP_KUBECONTEXT_COLOR=green
 export SPACESHIP_KUBECONTEXT_NAMESPACE_SHOW=true
-# export SPACESHIP_CHAR_PREFIXES_SUCCESS=(🙆‍♀️ 💁‍♀️ 🙋‍♀️)
-# export SPACESHIP_CHAR_PREFIXES_FAILURE=(🙅‍♀️ 🙎‍♀️ 🤦‍♀️ 🤷‍♀️)
 
 export SPACESHIP_PROMPT_SEPARATE_LINE=true
 export SPACESHIP_PROMPT_ADD_NEWLINE=true
