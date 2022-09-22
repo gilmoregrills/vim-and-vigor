@@ -1,27 +1,32 @@
 # load zoxide 
 eval "$(zoxide init zsh)"
+
 # Functions:
+function getPublicKey() {
+  ssh-keygen -y -f ${1}
+}
+
 function pglogin(){
   case $1 in
     dev)
-      export PGUSER=$(op get item --vault INFRA "postgres - eu-west-1" --fields username)
-      export PGPASSWORD=$(op get item --vault INFRA "postgres - eu-west-1" --fields password)
+      export PGUSER=$(op item get --vault INFRA "postgres - eu-west-1" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "postgres - eu-west-1" --fields password)
       ;;
     integ)
-      export PGUSER=$(op get item --vault INFRA "postgres - eu-west-2" --fields username)
-      export PGPASSWORD=$(op get item --vault INFRA "postgres - eu-west-2" --fields password)
+      export PGUSER=$(op item get --vault INFRA "postgres - eu-west-2" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "postgres - eu-west-2" --fields password)
       ;;
     eu)
-      export PGUSER=$(op get item --vault INFRA "postgres - eu-central-1" --fields username)
-      export PGPASSWORD=$(op get item --vault INFRA "postgres - eu-central-1" --fields password)
+      export PGUSER=$(op item get --vault INFRA "postgres - eu-central-1" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "postgres - eu-central-1" --fields password)
       ;;
     us)
-      export PGUSER=$(op get item --vault INFRA "postgres - us-east-1" --fields username)
-      export PGPASSWORD=$(op get item --vault INFRA "postgres - us-east-1" --fields password)
+      export PGUSER=$(op item get --vault INFRA "postgres - us-east-1" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "postgres - us-east-1" --fields password)
       ;;
     jp)
-      export PGUSER=$(op get item --vault INFRA "postgres - ap-northeast-1" --fields username)
-      export PGPASSWORD=$(op get item --vault INFRA "postgres - ap-northeast-1" --fields password)
+      export PGUSER=$(op item get --vault INFRA "postgres - ap-northeast-1" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "postgres - ap-northeast-1" --fields password)
       ;;
   esac
 
@@ -44,7 +49,7 @@ function create-state-lock(){
 
 function gAddKey() {
   eval "$(ssh-agent)"
-  ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable ~/.ssh/liebkind-root
+  ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable
 };
 
 function tclone() {
@@ -206,10 +211,26 @@ alias ga="git add"
 alias gc="git commit"
 alias gb="git branch"
 alias gch="git checkout"
-alias gchm="git checkout master && git fetch"
-alias gpm="git pull origin master"
-alias gresetm="git fetch origin && git reset --hard origin/master"
-alias gPruneBranches="git for-each-ref --format '%(refname:short)' refs/heads | grep -v master | xargs git branch -D"
+
+function gchm() {
+  ORIGIN=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+  PRIMARY_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+  git checkout ${PRIMARY_BRANCH}
+  git fetch
+}
+function gpm() {
+  PRIMARY_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+  git pull origin ${PRIMARY_BRANCH}
+}
+function gresetm() {
+  PRIMARY_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+  git fetch origin
+  git reset --hard origin/${PRIMARY_BRANCH}
+}
+function gPruneBranches() {
+  PRIMARY_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+  git for-each-ref --format '%(refname:short)' refs/heads | grep -v ${PRIMARY_BRANCH} | xargs git branch -D
+}
 
 # Terraform
 alias tf="terraform"
@@ -354,7 +375,7 @@ export SPACESHIP_PROMPT_ORDER=(
   # gcloud        # Google Cloud Platform section
   # venv          # virtualenv section
   # conda         # conda virtualenv section
-  pyenv         # Pyenv section
+  # pyenv         # Pyenv section
   # dotnet        # .NET section
   # ember         # Ember.js section
   kubectl       # Kubectl context section
@@ -381,9 +402,9 @@ source /opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-se
 bindkey "^[[A" history-beginning-search-backward
 bindkey "^[[B" history-beginning-search-forward
 
-
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+

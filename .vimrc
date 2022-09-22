@@ -40,7 +40,8 @@ map <C-n> :NERDTreeToggle<CR>
 nmap <C-c> :NERDComComment<CR>
 nmap <F1> :Clap filer<CR>
 nmap <F2> :Clap files<CR>
-nmap <F3> :Clap bcommits<CR>
+nmap <F3> :.w !bash<CR>
+nmap <F4> :w !bash<CR>
 noremap <PageUp> :tabprevious<CR>
 noremap <PageDown> :tabnext<CR>
 "Remove all trailing whitespace by pressing F5
