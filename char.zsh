@@ -1,1 +1,1 @@
-char.zsh
+/Users/robinyonge/code/git/denysdovhan/spaceship-prompt/sections/char.zsh
