@@ -7,18 +7,24 @@ call plug#begin()
 
 Plug 'bling/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
 Plug 'fatih/vim-go'
 Plug 'flazz/vim-colorschemes'
 Plug 'mbbill/undotree'
 Plug 'tpope/vim-surround'
 Plug 'w0rp/ale'
-Plug 'liuchengxu/vim-clap'
 Plug 'preservim/nerdtree'
 Plug 'hashivim/vim-terraform'
+Plug 'luochen1990/rainbow'
+Plug 'preservim/nerdcommenter'
 
 call plug#end()
 
+let g:go_def_mode='gopls'
+let g:go_info_mode='gopls'
+
 set rtp+=/Users/robinyonge/code/git/codota/tabnine-vim
+let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
 
 " nerdtree stuff
 autocmd StdinReadPre * let s:std_in=1
@@ -27,6 +33,10 @@ let NERDTreeShowHidden=1
 let NERDTreeUseTCD=1
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
+
+" nerdcommenter stuff
+let g:NERDTrimTrailingWhitespace = 1
+let g:NERDSpaceDelims = 1
 
 " ale options
 let g:airline#extensions#ale#enabled = 1
@@ -37,11 +47,11 @@ let g:terraform_fmt_on_save=1
 
 " keybindings
 map <C-n> :NERDTreeToggle<CR>
-nmap <C-c> :NERDComComment<CR>
 nmap <F1> :Clap filer<CR>
 nmap <F2> :Clap files<CR>
-nmap <F3> :.w !bash<CR>
-nmap <F4> :w !bash<CR>
+nmap <F3> :Clap grep<CR>
+nmap <F4> :Clap buffers<CR>
+nmap <F6> :set cmdheight=2<CR>
 noremap <PageUp> :tabprevious<CR>
 noremap <PageDown> :tabnext<CR>
 "Remove all trailing whitespace by pressing F5
@@ -76,7 +86,7 @@ set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:␣
 set number
 
 " gui settings
-set guifont=Dank\ Mono:h14
+set guifont=Dank\ Mono:h16
 
 " set indentation widths
 set tabstop=2 shiftwidth=2 expandtab softtabstop=2
@@ -89,20 +99,8 @@ set nowrap
 " fix error where vim cannot backspace
 set bs=2
 
-" set Explore/netrw settings
-" let g:netrw_liststyle = 1
-" let g:netrw_browse_split = 4
-" let g:netrw_altv = 1
-" let g:netrw_winsize = 20
-" autocmd VimEnter * :Vexplore
-
 " set current window/buffer working dir to dir of file?
 autocmd TabNew,TabNewEntered * :tcd %:p:h
-
-
-" go stuff
-let g:go_def_mode='gopls'
-let g:go_info_mode='gopls'
 
 " working on my own nvim plugin in go
 if exists('g:loaded_tweet')
@@ -122,6 +120,7 @@ call remote#host#RegisterPlugin('tweet', '0', [
     \ {'type': 'function', 'name': 'Tweet', 'sync': 1, 'opts': {}},
     \ ])
 
-set shellcmdflag=-ic
+
+set shellcmdflag=-c
 
 source ~/.vim/init.vim

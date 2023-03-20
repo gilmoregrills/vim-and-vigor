@@ -1,7 +1,16 @@
 # load zoxide 
 eval "$(zoxide init zsh)"
+source /Users/robinyonge/marlonrichert/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 # Functions:
+function forceUnlockState() {
+  aws dynamodb delete-item \
+    --table-name "tractable-shared-state-lock" \
+    --key '{"LockID": {"S": "${1}"}}' \
+    --dry-run
+}
+
+
 function getPublicKey() {
   ssh-keygen -y -f ${1}
 }
@@ -52,10 +61,6 @@ function gAddKey() {
   ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable
 };
 
-function tclone() {
-  git clone git@github.com:tractableai/${1}.git
-};
-
 function iterm2_set_user_vars() {
   iterm2_set_user_var aws_profile "$AWS_DEFAULT_PROFILE"
 };
@@ -91,27 +96,14 @@ function awsSetProfile(){
   unset_aws_creds
   if [ -z "$1" ]
     then
-      PS3='Select aws profile to use: '
-      #TODO: make the menu searchable/selectable with arrow keys
-      vars=(`cat ~/.aws/credentials | grep '\[*\]'| egrep -o '[^][]+'`)
-      echo "Execute \"awsSetProfile profile\" to switch account";
-      select opt in "${vars[@]}" ""Quit
-        do
-          if [ "$opt" = "Quit" ]; then
-            echo done
-            break
-          elif [[ "${vars[*]}" == *"$opt"* ]]; then
-            set_aws_keys $opt;
-            #TODO: add nicer output here from get-user and get-caller-identity
-            aws configure list;
-            break
-          else
-           clear
-           echo bad option
-          fi
-      done
+      echo "Select aws profile to use: "
+      vars=(`aws configure list-profiles`)
+      choice=$(gum choose "${vars[@]}")
+      export AWS_PROFILE="${choice}"
+      echo "Current profile is:";
+      aws configure list;
     else
-      export AWS_DEFAULT_PROFILE=$1;
+      export AWS_PROFILE=$1;
       echo "Current profile is:";
       aws configure list;
   fi
@@ -170,8 +162,8 @@ function chrome() {
 function jbranch() {
   jira progress ${1}
   git checkout -b ${1}
-  git branch --set-upstream-to origin/${1}
-  return ${1};
+  git push --set-upstream origin ${1}
+  return ${1}
 }
 
 # usage:
@@ -181,7 +173,7 @@ function jpr() {
   ID=$(git rev-parse --abbrev-ref HEAD) 
   jira pr ${ID}
   # remove --web and you'll get prompted to fill in title and description in-line
-  gh pr create --web
+  gh pr create
 }
 
 function GSuiteSA() {
@@ -195,19 +187,29 @@ function GSuiteSA() {
 # General:
 alias shebang='echo "#!/usr/bin/env bash"'
 alias watch="watch "
-alias vim="nvim"
+alias vim="gvim"
 alias sed="gsed"
 alias cssh="csshx"
 alias idGroups="id -a | sed 's|,|\n|g'"
 alias find="gfind"
+alias pico8="pico8 -home ~/pico8/"
 
 # Git:
 alias g="git"
 alias gs="git status"
 alias ga="git add"
-alias gc="git commit"
 alias gb="git branch"
 alias gch="git checkout"
+
+function gc() {
+  TYPE=$(gum choose "fix" "feat" "docs" "style" "refactor" "test" "chore" "revert")
+  #TODO: add a bit to check if a change is breaking
+  SCOPE=$(gum input --placeholder "scope")
+  test -n "$SCOPE" && SCOPE="($SCOPE)"
+  SUMMARY=$(gum input --value "$TYPE$SCOPE: " --placeholder "Summary of this change")
+  DESCRIPTION=$(gum write --placeholder "Details of this change (CTRL+D to finish)")
+  gum confirm "Commit changes?" && git commit -m "$SUMMARY" -m "$DESCRIPTION"
+}
 
 function gchm() {
   ORIGIN=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
@@ -215,6 +217,7 @@ function gchm() {
   git checkout ${PRIMARY_BRANCH}
   git fetch
 }
+
 function gpm() {
   PRIMARY_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
   git pull origin ${PRIMARY_BRANCH}
@@ -228,6 +231,10 @@ function gPruneBranches() {
   PRIMARY_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
   git for-each-ref --format '%(refname:short)' refs/heads | grep -v ${PRIMARY_BRANCH} | xargs git branch -D
 }
+
+function tclone() {
+  git clone git@github.com:tractableai/${1}.git
+};
 
 # Terraform
 alias tf="terraform"
@@ -295,6 +302,9 @@ alias jls='jira ls -a robin.yonge'
 # ssh
 alias ssh='echo "shh 🤫" && ssh'
 
+#goneovim
+alias gvim='goneovim'
+
 #
 # startup script:
 #
@@ -304,7 +314,7 @@ alias ssh='echo "shh 🤫" && ssh'
 # load commonly-used secrets as envvars
 source /Users/robinyonge/.bash_secrets
 
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 eval "$(thefuck --alias)"
 alias oops='fuck'
@@ -320,9 +330,9 @@ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 export GOPATH=$HOME/go
 export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
 export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
+fpath=($fpath "/Users/robinyonge/.zfunctions")
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
-fpath=($fpath "/Users/robinyonge/.zfunctions")
 
 # Spaceship config
 
@@ -342,6 +352,20 @@ export SPACESHIP_KUBECONTEXT_NAMESPACE_SHOW=true
 
 export SPACESHIP_PROMPT_SEPARATE_LINE=true
 export SPACESHIP_PROMPT_ADD_NEWLINE=true
+
+SPACESHIP_CHAR_PREFIXES_SUCCESS=("🙆‍♀️" "💁‍♀️" "🙋‍♀️" "✨")
+SPACESHIP_CHAR_PREFIXES_FAILURE=("🙅‍♀️" "🤦‍♀️" "🤷‍♀️")
+
+# special warp-specific prompt config
+if [[ $TERM_PROGRAM == "WarpTerminal" ]]; then
+
+# otherwise set in  /Users/robinyonge/code/git/denysdovhan/spaceship-prompt
+export SPACESHIP_CHAR_SYMBOL=" ↴ "
+export SPACESHIP_CHAR_SYMBOL_ROOT="⚠️  ↴ "
+export SPACESHIP_CHAR_PREFIXES_SUCCESS=("✨")
+export SPACESHIP_CHAR_PREFIXES_FAILURE=("✨")
+
+fi
 
 export SPACESHIP_PROMPT_ORDER=(
   # time          # Time stamps section
@@ -401,3 +425,8 @@ if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Created by `pipx` on 2023-03-06 13:28:47
+export PATH="$PATH:/Users/robinyonge/.local/bin"
