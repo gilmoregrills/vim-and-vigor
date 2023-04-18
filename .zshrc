@@ -18,24 +18,24 @@ function getPublicKey() {
 function pglogin(){
   case $1 in
     dev)
-      export PGUSER=$(op item get --vault INFRA "postgres - eu-west-1" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "postgres - eu-west-1" --fields password)
+      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
       ;;
     integ)
-      export PGUSER=$(op item get --vault INFRA "postgres - eu-west-2" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "postgres - eu-west-2" --fields password)
+      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
       ;;
     eu)
-      export PGUSER=$(op item get --vault INFRA "postgres - eu-central-1" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "postgres - eu-central-1" --fields password)
+      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
       ;;
     us)
-      export PGUSER=$(op item get --vault INFRA "postgres - us-east-1" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "postgres - us-east-1" --fields password)
+      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
       ;;
     jp)
-      export PGUSER=$(op item get --vault INFRA "postgres - ap-northeast-1" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "postgres - ap-northeast-1" --fields password)
+      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
+      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
       ;;
   esac
 
@@ -160,10 +160,18 @@ function chrome() {
 # to checkout a new branch with the issue ID in question
 # and set the ticket to in progress
 function jbranch() {
-  jira progress ${1}
-  git checkout -b ${1}
-  git push --set-upstream origin ${1}
-  return ${1}
+  echo "Select Jira ticket:"
+  SAVEIFS=${IFS}
+  IFS=$'\n'
+  VARS=(`jira mine`)
+  IFS=${SAVEIFS}
+  CHOICE=$(gum choose "${VARS[@]}")
+  echo ${CHOICE}
+  TICKETID=$(echo ${CHOICE} | awk -F ':' '{print $1}')
+  jira progress ${TICKETID}
+  git checkout -b ${TICKETID}
+  git push --set-upstream origin ${TICKETID}
+  return ${TICKETID}
 }
 
 # usage:
@@ -193,6 +201,12 @@ alias cssh="csshx"
 alias idGroups="id -a | sed 's|,|\n|g'"
 alias find="gfind"
 alias pico8="pico8 -home ~/pico8/"
+alias python="python3"
+
+# kitty
+alias dff="kitty +kitten diff"
+alias hg="kitty +kitten hyperlinked_grep"
+
 
 # Git:
 alias g="git"
@@ -331,6 +345,7 @@ export GOPATH=$HOME/go
 export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
 export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
 fpath=($fpath "/Users/robinyonge/.zfunctions")
+autoload -Uz compinit && compinit
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
