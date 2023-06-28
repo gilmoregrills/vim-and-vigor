@@ -1,6 +1,5 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
-filetype plugin on
 
 " vim-plug plugin config:
 call plug#begin()
@@ -17,14 +16,53 @@ Plug 'preservim/nerdtree'
 Plug 'hashivim/vim-terraform'
 Plug 'luochen1990/rainbow'
 Plug 'preservim/nerdcommenter'
+Plug 'python-mode/python-mode'
+Plug 'talha-akram/noctis.nvim'
 
 call plug#end()
+
+filetype plugin on
 
 let g:go_def_mode='gopls'
 let g:go_info_mode='gopls'
 
-set rtp+=/Users/robinyonge/code/git/codota/tabnine-vim
+" set rtp+=/Users/robinyonge/code/git/codota/tabnine-vim
+
+" rainbow parentheses
 let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
+let g:rainbow_conf = {
+\	'guifgs': ['lightmagenta', 'lightgreen', 'lightblue', 'lightred'],
+\	'ctermfgs': ['lightmagenta', 'lightgreen', 'lightblue', 'lightred'],
+\	'guis': [''],
+\	'cterms': [''],
+\ 'operators': '_,_',
+\	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
+\	'separately': {
+\		'*': {},
+\		'markdown': {
+\			'parentheses_options': 'containedin=markdownCode contained',
+\		},
+\		'lisp': {
+\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
+\		},
+\		'haskell': {
+\			'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/\v\{\ze[^-]/ end=/}/ fold'],
+\		},
+\		'vim': {
+\			'parentheses_options': 'containedin=vimFuncBody',
+\		},
+\		'perl': {
+\			'syn_name_prefix': 'perlBlockFoldRainbow',
+\		},
+\		'stylus': {
+\			'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'],
+\		},
+\		'css': 0,
+\		'nerdtree': 0,
+\	}
+\}
+
+let g:pymode_options_max_line_length=100
 
 " nerdtree stuff
 autocmd StdinReadPre * let s:std_in=1
@@ -35,8 +73,11 @@ let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
 " nerdcommenter stuff
+let mapleader = ","
 let g:NERDTrimTrailingWhitespace = 1
 let g:NERDSpaceDelims = 1
+let g:NERDCreateDefaultMappings = 1
+map [count]<leader>cc :NERDCommenterToggle
 
 " ale options
 let g:airline#extensions#ale#enabled = 1
@@ -66,6 +107,7 @@ au BufNewFile,BufRead Jenkinsfile setf groovy
 " themeing:
 set termguicolors
 colorscheme fairyfloss
+" colorscheme noctis_lilac
 highlight Comment cterm=italic gui=italic
 highlight Function cterm=italic gui=italic
 highlight Keyword cterm=italic gui=italic

@@ -3,14 +3,6 @@ eval "$(zoxide init zsh)"
 source /Users/robinyonge/marlonrichert/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 # Functions:
-function forceUnlockState() {
-  aws dynamodb delete-item \
-    --table-name "tractable-shared-state-lock" \
-    --key '{"LockID": {"S": "${1}"}}' \
-    --dry-run
-}
-
-
 function getPublicKey() {
   ssh-keygen -y -f ${1}
 }
@@ -43,18 +35,6 @@ function pglogin(){
   export PGHOST="postgres.${1}.tractable.io"
   pgcli
 }
-
-function awsssh(){
-  ssh $(aws ec2 describe-instances --region $1 --instance-id $2 --query 'Reservations[].Instances[].PrivateIpAddress' | tail -n 2 | head -n 1 | awk -F\" '{print $2}')
-};
-
-function awsip(){
-  aws ec2 describe-instances --region $1 --instance-id $2 --query 'Reservations[].Instances[].PrivateIpAddress' | tail -n 2 | head -n 1 | awk -F\" '{print $2}'
-};
-
-function create-state-lock(){
-  aws dynamodb create-table --region eu-west-2 --profile tractableai-shared --table-name $1 --billing-mode PAY_PER_REQUEST --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH
-};
 
 function gAddKey() {
   eval "$(ssh-agent)"
@@ -109,52 +89,6 @@ function awsSetProfile(){
   fi
 };
 
-# Usage:
-# get_aws_mfa_token <code> <profile-name>
-# profile name is optional and it will default to "default"
-function aws_mfa_login(){
-    unset_aws_creds
-    if [ -z "$1" ]
-        then
-            echo "Please provide a token from your MFA device!";
-            return 1;
-    fi
-    if [ -z "$2" ]
-        then
-						echo "Profile not specified, using 'default'";
-            profile="default";
-        else
-            profile="$2";
-    fi
-    mfaSerial=(`aws iam list-mfa-devices | jq -r .MFADevices[0].SerialNumber`); # get the ARN of the mfa device
-    echo "Fetching temporary login credentials for `aws configure get ${profile}.aws_access_key_id`";
-    aws sts get-session-token --serial-number ${mfaSerial} --token-code ${1} --profile ${profile} > sts_output.json; # generates temporary creds using device and code
-		if [ $? == 0 ]
-			  then
-            echo "Login Successful";
-		fi
-    access_key=$(jq '.Credentials.AccessKeyId' -r sts_output.json);
-    secret=$(jq '.Credentials.SecretAccessKey' -r sts_output.json);
-		session_token=$(jq '.Credentials.SessionToken' -r sts_output.json);
-    export AWS_ACCESS_KEY_ID=$access_key
-    export AWS_SECRET_ACCESS_KEY=$secret
-    export AWS_SESSION_TOKEN=$session_token
-		echo "Credentials Exported";
-    rm sts_output.json
-};
-
-function chrome() {
-  local site=""
-  if [[ -f "$(pwd)/$1" ]]; then
-    site="$(pwd)/$1"
-  elif [[ "$1" =~ "^http" ]]; then
-    site="$1"
-  else
-    site="http://$1"
-  fi
-  /usr/bin/open -a "/Applications/Google Chrome.app" "$site";
-};
-
 # usage:
 # jbranch <ISSUE_ID>
 # to checkout a new branch with the issue ID in question
@@ -184,7 +118,7 @@ function jpr() {
   gh pr create
 }
 
-function GSuiteSA() {
+function gSuiteSA() {
   export GOOGLE_CLOUD_KEYFILE_JSON=$(aws --profile=tractableai-shared --region=eu-west-2 ssm get-parameter --name /prod/infrastructure/tf-env-gsuite/gsuite/service-account --with-decryption | jq -jr '.Parameter.Value')
 }
 
@@ -195,17 +129,22 @@ function GSuiteSA() {
 # General:
 alias shebang='echo "#!/usr/bin/env bash"'
 alias watch="watch "
-alias vim="gvim"
+alias vim="nvim"
 alias sed="gsed"
 alias cssh="csshx"
 alias idGroups="id -a | sed 's|,|\n|g'"
 alias find="gfind"
 alias pico8="pico8 -home ~/pico8/"
 alias python="python3"
+alias vimrc="nvim ~/.vimrc"
+alias zshrc="nvim ~/.zshrc"
+alias reload='source ~/.zshrc;echo "sourced ~/.zshrc"'
 
 # kitty
-alias dff="kitty +kitten diff"
+alias kdiff="kitty +kitten diff"
 alias hg="kitty +kitten hyperlinked_grep"
+alias kssh="kitty +kitten ssh"
+alias edit="edit-in-kitty --cwd --type=window"
 
 
 # Git:
@@ -241,11 +180,6 @@ function gresetm() {
   git fetch origin
   git reset --hard origin/${PRIMARY_BRANCH}
 }
-function gPruneBranches() {
-  PRIMARY_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
-  git for-each-ref --format '%(refname:short)' refs/heads | grep -v ${PRIMARY_BRANCH} | xargs git branch -D
-}
-
 function tclone() {
   git clone git@github.com:tractableai/${1}.git
 };
@@ -256,23 +190,9 @@ alias tf-fmt="terraform fmt -recursive ."
 alias tfplan="terraform plan -no-color"
 alias tfapply="terraform apply -no-color -auto-approve"
 
-# AWS etc
-alias awsProdSamlLogin="saml2aws login --profile=tractableai --idp-account=tractableai && saml2aws script --profile tractableai"
-alias awsProdEUSamlLogin="saml2aws login --profile=tractableai-prod-euce1 --idp-account=tractableai-prod-euce1 && saml2aws script --profile tractableai-prod-euce1"
-alias awsProdUSSamlLogin="saml2aws login --profile=tractableai-prod-use1 --idp-account=tractableai-prod-use1 && saml2aws script --profile tractableai-prod-use1"
-alias awsProdJPSamlLogin="saml2aws login --profile=tractableai-prod-apne1 --idp-account=tractableai-prod-apne1 && saml2aws script --profile tractableai-prod-apne1"
-alias awsStorageSamlLogin="saml2aws login --profile=tractableai-storage --idp-account=tractableai-storage && saml2aws script --profile tractableai-storage"
-alias awsSharedSamlLogin="saml2aws login --profile=tractableai-shared --idp-account=tractableai-shared && saml2aws script --profile tractableai-shared"
-alias awsMasterSamlLogin="saml2aws login --profile=tractableai-master --idp-account=tractableai-master && saml2aws script --profile tractableai-master"
-alias awsSandboxSamlLogin="saml2aws login --profile=tractableai-sandbox --idp-account=tractableai-sandbox && saml2aws script --profile tractableai-sandbox"
-alias awsResearchSamlLogin="saml2aws login --profile=tractableai-research --idp-account=tractableai-research && saml2aws script --profile tractableai-research"
-alias awsResearchRoleSharedSamlLogin="saml2aws login --profile=tractableai-shared-research --idp-account=tractableai-shared-research && saml2aws script --profile tractableai-shared-research"
-alias awsDpProdSamlLogin="saml2aws login --profile=tractableai-data-platform-prod --idp-account=tractableai-data-platform-prod && saml2aws script --profile tractableai-data-platform-prod"
-
 # Kubernetes
 alias kuebctl="kubectl" # most common typo lmao
-alias kns="kubectl get ns"
-alias kgp="kubectl get pods"
+alias unset_kubecontext="kubectl config unset current-context"
 export MINIKUBE_IN_STYLE=1
 export KUBE_EDITOR=nvim
 
@@ -310,25 +230,8 @@ alias 1pass='eval $(op signin tractable)'
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias myip='curl http://whatismyip.akamai.com/'
 
-# jira
-alias jls='jira ls -a robin.yonge'
-
-# ssh
-alias ssh='echo "shh 🤫" && ssh'
-
-#goneovim
-alias gvim='goneovim'
-
-#
-# startup script:
-#
-
-# ssh-add keys for git
-# gAddKey
 # load commonly-used secrets as envvars
 source /Users/robinyonge/.bash_secrets
-
-# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 eval "$(thefuck --alias)"
 alias oops='fuck'
@@ -342,89 +245,70 @@ export PATH=$PATH:/Users/robinyonge/.kafka/current/bin
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 export GOPATH=$HOME/go
+export GOBIN="/Users/robinyonge/go/bin"
 export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
 export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
 fpath=($fpath "/Users/robinyonge/.zfunctions")
-autoload -Uz compinit && compinit
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Spaceship config
+# custom prompt stuff
+autoload -Uz vcs_info
+autoload -U colors && colors
+SUCCESS_EMOJIS=("🙆‍♀️" "💁‍♀️" "🙋‍♀️")
+FAILURE_EMOJIS=("🙅‍♀️" "🤦‍♀️" "🤷‍♀️")
 
-SPACESHIP_PROMPT_FIRST_PREFIX_SHOW=true
+setopt prompt_subst
+setopt PROMPT_SUBST
+zstyle ':vcs_info:git:*' check_for_changes true
+zstyle ':vcs_info:git:*' check_for_staged_changes true
+zstyle ':vcs_info:git:*' formats ":%s(%b)"
 
-export SPACESHIP_CHAR_SYMBOL="\n ↳ "
-export SPACESHIP_CHAR_SYMBOL_ROOT="\n ↳ ⚠️  "
-export SPACESHIP_CHAR_PREFIX="✨ "
-export SPACESHIP_DIR_PREFIX="📂 "
-export SPACESHIP_GIT_PREFIX="on "
-export SPACESHIP_AWS_SYMBOL="☁️  "
-export SPACESHIP_KUBECTL_PREFIX="at "
-export SPACESHIP_KUBECONTEXT_PREFIX="at "
-export SPACESHIP_KUBECONTEXT_SHOW=true
-export SPACESHIP_KUBECONTEXT_COLOR=green
-export SPACESHIP_KUBECONTEXT_NAMESPACE_SHOW=true
+precmd() { 
+  myprompt 
+}
 
-export SPACESHIP_PROMPT_SEPARATE_LINE=true
-export SPACESHIP_PROMPT_ADD_NEWLINE=true
+function myprompt() {
+  RETVAL=$?
+  vcs_info
 
-SPACESHIP_CHAR_PREFIXES_SUCCESS=("🙆‍♀️" "💁‍♀️" "🙋‍♀️" "✨")
-SPACESHIP_CHAR_PREFIXES_FAILURE=("🙅‍♀️" "🤦‍♀️" "🤷‍♀️")
+  local 'STATUS_COLOR' 'PROMPTMOJI'
+  if [[ $RETVAL -eq 0 ]]; then
+    STATUS_COLOR=green
+    SIZE=${#SUCCESS_EMOJIS[@]}
+    INDEX=$(($RANDOM % $SIZE))
+    PROMPTMOJI="${SUCCESS_EMOJIS[$INDEX + 1]}"
+  else
+    STATUS_COLOR=red
+    SIZE=${#FAILURE_EMOJIS[@]}
+    INDEX=$(($RANDOM % $SIZE))
+    PROMPTMOJI="${FAILURE_EMOJIS[$INDEX + 1]}"
+  fi
 
-# special warp-specific prompt config
-if [[ $TERM_PROGRAM == "WarpTerminal" ]]; then
+  local 'TF_VERSION_PROMPT'
+  if [ -e .terraform-version ]; then
+    TF_VERSION_PROMPT="tf$(tfenv version-name) "
+  else
+    TF_VERSION_PROMPT=""
+  fi
 
-# otherwise set in  /Users/robinyonge/code/git/denysdovhan/spaceship-prompt
-export SPACESHIP_CHAR_SYMBOL=" ↴ "
-export SPACESHIP_CHAR_SYMBOL_ROOT="⚠️  ↴ "
-export SPACESHIP_CHAR_PREFIXES_SUCCESS=("✨")
-export SPACESHIP_CHAR_PREFIXES_FAILURE=("✨")
+  local 'AWS_PROMPT'
+  if [ -z $AWS_PROFILE ]; then
+    AWS_PROMPT=""
+  else
+    AWS_PROMPT="$AWS_PROFILE "
+  fi
 
-fi
+  if kubectl config current-context &> /dev/null ; then
+    KUBE_CONTEXT_PROMPT="$(kubectl config current-context)($(kubens -c)) "
+  else
+    KUBE_CONTEXT_PROMPT=""
+  fi
 
-export SPACESHIP_PROMPT_ORDER=(
-  # time          # Time stamps section
-  # user          # Username section
-  dir           # Current directory section
-  host          # Hostname section
-  git           # Git section (git_branch + git_status)
-  # hg            # Mercurial section (hg_branch  + hg_status)
-  # package       # Package version
-  # gradle        # Gradle section
-  # maven         # Maven section
-  node          # Node.js section
-  # ruby          # Ruby section
-  # elixir        # Elixir section
-  # xcode         # Xcode section
-  # swift         # Swift section
-  golang        # Go section
-  # php           # PHP section
-  # rust          # Rust section
-  # haskell       # Haskell Stack section
-  # julia         # Julia section
-  # docker        # Docker section
-  aws           # Amazon Web Services section
-  # gcloud        # Google Cloud Platform section
-  # venv          # virtualenv section
-  # conda         # conda virtualenv section
-  # pyenv         # Pyenv section
-  # dotnet        # .NET section
-  # ember         # Ember.js section
-  kubectl       # Kubectl context section
-  kubectl_context
-  # terraform     # Terraform workspace section
-  # exec_time     # Execution time
-  # line_sep      # Line break
-  # battery       # Battery level and status
-  # vi_mode       # Vi-mode indicator
-  # jobs          # Background jobs indicator
-  exit_code     # Exit code section
-  char          # Prompt character
-)
-
-# Set Spaceship ZSH as a prompt
-autoload -U promptinit; promptinit
-prompt spaceship
+  PS1=%F{blue}%~%f%F{green}${vcs_info_msg_0_}%f' '%F{yellow}"$AWS_PROMPT"%f%F{magenta}"$TF_VERSION_PROMPT"%f%F{cyan}"$KUBE_CONTEXT_PROMPT"%f"$PROMPTMOJI"$'\n'%F{$STATUS_COLOR}'↳ '%f
+  PS0=$'\nps0'
+  PS2="ps2 > "
+}
 
 # syntax highlighting
 source /Users/robinyonge/code/git/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -439,7 +323,6 @@ if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
-
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
