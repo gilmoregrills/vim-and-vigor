@@ -285,9 +285,14 @@ function myprompt() {
     PROMPTMOJI="${FAILURE_EMOJIS[$INDEX + 1]}"
   fi
 
+  if [ $FASTPROMPT ]; then
+    PS1=%F{blue}%~' '"🏃‍♀️"$'\n'%F{$STATUS_COLOR}'↳ '%f
+    return
+  fi
+
   local 'TF_VERSION_PROMPT'
   if [ -e .terraform-version ]; then
-    TF_VERSION_PROMPT="tf$(tfenv version-name) "
+    TF_VERSION_PROMPT="using %F{magenta}tf$(tfenv version-name)%f "
   else
     TF_VERSION_PROMPT=""
   fi
@@ -296,19 +301,23 @@ function myprompt() {
   if [ -z $AWS_PROFILE ]; then
     AWS_PROMPT=""
   else
-    AWS_PROMPT="$AWS_PROFILE "
+    AWS_PROMPT="on %F{yellow}$AWS_PROFILE%f "
   fi
 
   if kubectl config current-context &> /dev/null ; then
-    KUBE_CONTEXT_PROMPT="$(kubectl config current-context)($(kubens -c)) "
+    KUBE_CONTEXT_PROMPT="on %F{cyan}$(kubectl config current-context)($(kubens -c))%f "
   else
     KUBE_CONTEXT_PROMPT=""
   fi
-
-  PS1=%F{blue}%~%f%F{green}${vcs_info_msg_0_}%f' '%F{yellow}"$AWS_PROMPT"%f%F{magenta}"$TF_VERSION_PROMPT"%f%F{cyan}"$KUBE_CONTEXT_PROMPT"%f"$PROMPTMOJI"$'\n'%F{$STATUS_COLOR}'↳ '%f
-  PS0=$'\nps0'
-  PS2="ps2 > "
+  
+  PS1=%F{blue}%~%f%F{green}${vcs_info_msg_0_}%f' '"$AWS_PROMPT""$TF_VERSION_PROMPT""$KUBE_CONTEXT_PROMPT""$PROMPTMOJI"$'\n'%F{$STATUS_COLOR}'↳ '%f
+  # PS0=$'\nps0'
+  # PS2="ps2 > "
+  return
 }
+
+alias fastprompt="export FASTPROMPT=true"
+alias slowprompt="unset FASTPROMPT"
 
 # syntax highlighting
 source /Users/robinyonge/code/git/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -328,3 +337,4 @@ if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc' ]; the
 
 # Created by `pipx` on 2023-03-06 13:28:47
 export PATH="$PATH:/Users/robinyonge/.local/bin"
+eval "$(atuin init zsh)"

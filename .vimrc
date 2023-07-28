@@ -4,22 +4,25 @@ filetype off                  " required
 " vim-plug plugin config:
 call plug#begin()
 
-Plug 'bling/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
-Plug 'fatih/vim-go'
-Plug 'flazz/vim-colorschemes'
-Plug 'mbbill/undotree'
-Plug 'tpope/vim-surround'
-Plug 'w0rp/ale'
-Plug 'preservim/nerdtree'
-Plug 'hashivim/vim-terraform'
-Plug 'luochen1990/rainbow'
-Plug 'preservim/nerdcommenter'
-Plug 'python-mode/python-mode'
-Plug 'talha-akram/noctis.nvim'
+" Plug 'bling/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
+" Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
+" Plug 'fatih/vim-go'
+" Plug 'flazz/vim-colorschemes'
+" Plug 'mbbill/undotree'
+" Plug 'tpope/vim-surround'
+" Plug 'w0rp/ale'
+" Plug 'preservim/nerdtree'
+" Plug 'hashivim/vim-terraform'
+" Plug 'luochen1990/rainbow'
+" Plug 'preservim/nerdcommenter'
+" Plug 'python-mode/python-mode'
+" Plug 'folke/noice.nvim'
+" Plug 'MunifTanjim/nui.nvim'
 
 call plug#end()
+
+"lua require("noice").setup()
 
 filetype plugin on
 
