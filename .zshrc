@@ -1,8 +1,62 @@
-# load zoxide 
-eval "$(zoxide init zsh)"
-source /Users/robinyonge/marlonrichert/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+source /Users/robinyonge/code/git/marlonrichert/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 # Functions:
+
+function v2g() {
+    src="" # required
+    target="" # optional (defaults to source file name)
+    resolution="" # optional (defaults to source video resolution)
+    fps=10 # optional (defaults to 10 fps -- helps drop frames)
+
+    while [ $# -gt 0 ]; do
+        if [[ $1 == *"--"* ]]; then
+                param="${1/--/}"
+                declare $param="$2"
+        fi
+        shift
+    done
+
+    if [[ -z $src ]]; then
+        echo -e "\nPlease call 'v2g --src <source video file>' to run this command\n"
+        return 1
+    fi
+
+    if [[ -z $target ]]; then
+        target=$src
+    fi
+
+    basename=${target%.*}
+    [[ ${#basename} = 0 ]] && basename=$target
+    target="$basename.gif"
+
+    if [[ -n $fps ]]; then
+        fps="-r $fps"
+    fi
+
+    if [[ -n $resolution ]]; then
+        resolution="-s $resolution"
+    fi
+
+    runcommand="ffmpeg -i "$src" -pix_fmt rgb8 $fps $resolution "$target" && gifsicle -O3 "$target" -o "$target""
+
+    echo ""
+    echo ".------------------------."
+    echo "|\\\\////////       90 min |"
+    echo "| \\/  __  ______  __     |"
+    echo "|    /  \|\.....|/  \    |"
+    echo "|    \__/|/_____|\__/    |"
+    echo "| A                      |"
+    echo "|    ________________    |"
+    echo "|___/_._o________o_._\___|"
+    echo ""
+    echo "ツ running >> $runcommand"
+    echo "ツ ..."
+    echo ""
+
+    eval " $runcommand"
+    osascript -e "display notification \"$target successfully converted and saved\" with title \"v2g complete\""
+}
+
 function getPublicKey() {
   ssh-keygen -y -f ${1}
 }
@@ -108,11 +162,23 @@ function jbranch() {
   return ${TICKETID}
 }
 
+function jch() {
+  echo "Select Jira ticket:"
+  SAVEIFS=${IFS}
+  IFS=$'\n'
+  VARS=(`jira mine`)
+  IFS=${SAVEIFS}
+  CHOICE=$(gum choose "${VARS[@]}")
+  echo ${CHOICE}
+  TICKETID=$(echo ${CHOICE} | awk -F ':' '{print $1}')
+  git checkout ${TICKETID}
+}
+
 # usage:
 # from a pushed branch where branch name == jira ticket run
 # jpr
 function jpr() {
-  ID=$(git rev-parse --abbrev-ref HEAD) 
+  ID=$(git rev-parse --abbrev-ref HEAD)
   jira pr ${ID}
   # remove --web and you'll get prompted to fill in title and description in-line
   gh pr create
@@ -136,9 +202,10 @@ alias idGroups="id -a | sed 's|,|\n|g'"
 alias find="gfind"
 alias pico8="pico8 -home ~/pico8/"
 alias python="python3"
-alias vimrc="nvim ~/.vimrc"
+alias vimrc="nvim ~/.config/nvim"
 alias zshrc="nvim ~/.zshrc"
 alias reload='source ~/.zshrc;echo "sourced ~/.zshrc"'
+alias :q='exit'
 
 # kitty
 alias kdiff="kitty +kitten diff"
@@ -155,11 +222,13 @@ alias gb="git branch"
 alias gch="git checkout"
 
 function gc() {
-  TYPE=$(gum choose "fix" "feat" "docs" "style" "refactor" "test" "chore" "revert")
-  #TODO: add a bit to check if a change is breaking
-  SCOPE=$(gum input --placeholder "scope")
-  test -n "$SCOPE" && SCOPE="($SCOPE)"
-  SUMMARY=$(gum input --value "$TYPE$SCOPE: " --placeholder "Summary of this change")
+  TYPE=$(gum choose "fix" "feat" "chore" "docs" "style" "refactor" "test" "revert")
+  # test -n "$SCOPE" && SCOPE="($SCOPE)"
+  while True ; do
+    SUMMARY=$(gum input --value "$TYPE: " --placeholder "Summary of this change")
+    [[ ${#SUMMARY} -le 50 ]] && break
+    echo "Sorry that commit summary was ${#SUMMARY} characters, please try to keep it below 50."
+  done
   DESCRIPTION=$(gum write --placeholder "Details of this change (CTRL+D to finish)")
   gum confirm "Commit changes?" && git commit -m "$SUMMARY" -m "$DESCRIPTION"
 }
@@ -201,24 +270,13 @@ alias d="docker"
 alias dockerKillZombies="docker ps | grep hours | awk '{print $1}' | xargs docker kill"
 alias dockerHardReset="docker ps -q | xargs -L1 docker stop && test -z \"$(docker ps -q 2>/dev/null)\" && osascript -e 'quit app \"Docker\"' && open --background -a Docker"
 
-function dockerRemote() {
-  export DOCKER_HOST=ssh://ubuntu@10.12.3.178
-  eval "$(ssh-agent)"
-  ssh-add ~/.ssh/est-cr-us.pem
-};
-
-function dockerLocal() {
-  unset DOCKER_HOST
-};
-
 # Easier navigation: .., ..., ...., ....., ~ and -
-alias ls="ls -G"
+alias ls="exa --across"
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 alias -- -="cd -"                  # Go to previous dir with -
-alias cd.='cd $(readlink -f .)'    # Go to real dir (i.e. if current dir is linked)
 alias ll="exa -la --git"
 
 # OSX
@@ -237,17 +295,9 @@ eval "$(thefuck --alias)"
 alias oops='fuck'
 
 # PATH garbage
-export PATH="$HOME/.poetry/bin:$PATH"
-export PATH="/usr/local/sbin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH=$PATH:/Users/robinyonge/code/git/tractable/cli-tools/bin
-export PATH=$PATH:/Users/robinyonge/.kafka/current/bin
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 export GOPATH=$HOME/go
 export GOBIN="/Users/robinyonge/go/bin"
-export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
-export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
+export PATH="$PATH:$HOME/.poetry/bin:/usr/local/sbin:$HOME/.cargo/bin:/Users/robinyonge/code/git/tractable/cli-tools/bin:/Users/robinyonge/.kafka/current/bin:${KREW_ROOT:-$HOME/.krew}/bin:$GOBIN:/usr/local/opt/findutils/libexec/gnubin:/Users/robinyonge/.local/bin"
 fpath=($fpath "/Users/robinyonge/.zfunctions")
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -264,8 +314,8 @@ zstyle ':vcs_info:git:*' check_for_changes true
 zstyle ':vcs_info:git:*' check_for_staged_changes true
 zstyle ':vcs_info:git:*' formats ":%s(%b)"
 
-precmd() { 
-  myprompt 
+precmd() {
+  myprompt
 }
 
 function myprompt() {
@@ -309,7 +359,7 @@ function myprompt() {
   else
     KUBE_CONTEXT_PROMPT=""
   fi
-  
+
   PS1=%F{blue}%~%f%F{green}${vcs_info_msg_0_}%f' '"$AWS_PROMPT""$TF_VERSION_PROMPT""$KUBE_CONTEXT_PROMPT""$PROMPTMOJI"$'\n'%F{$STATUS_COLOR}'↳ '%f
   # PS0=$'\nps0'
   # PS2="ps2 > "
@@ -334,7 +384,3 @@ if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/
 if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Created by `pipx` on 2023-03-06 13:28:47
-export PATH="$PATH:/Users/robinyonge/.local/bin"
-eval "$(atuin init zsh)"
