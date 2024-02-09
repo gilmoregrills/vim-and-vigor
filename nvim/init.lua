@@ -19,7 +19,8 @@ require("lazy").setup("plugins", {
 
 -- ugly ported vimscript stuff
 vim.cmd([[
-" filetype plugin on
+filetype plugin on
+syntax on
 
 map <C-n> :Neotree toggle<CR>
 nmap <F1> :Telescope<CR>
@@ -27,6 +28,7 @@ nmap <F2> :Telescope find_files<CR>
 nmap <F3> :Telescope live_grep<CR>
 nmap <F4> :TroubleToggle document_diagnostics<CR>
 nmap <F5> :Neotree float git_status<CR>
+nnoremap <space> za
 
 set tabstop=2 shiftwidth=2 expandtab softtabstop=2
 
@@ -34,6 +36,7 @@ augroup FormatAutogroup
   autocmd!
   autocmd BufWritePost * FormatWrite
 augroup END
+
 
 set number
 ]])
@@ -70,6 +73,7 @@ local attach_go_test = function(bufnr, output_bufnr, command)
 
 			state = {
 				bufnr = bufnr,
+				output = {},
 				tests = {},
 			}
 
@@ -81,35 +85,44 @@ local attach_go_test = function(bufnr, output_bufnr, command)
 						return
 					end
 
-					for _, line in ipairs(data) do
+					for i, line in ipairs(data) do
 						local decoded = vim.json.decode(line)
-						-- if successful then
-						-- 	print(line)
-						-- 	print(type(line))
-						-- 	print(response.Action)
-						-- else
-						-- 	print(response.code)
-						-- end
+						table.insert(state.output, decoded)
+						print(type(decoded))
+						print(decoded.Action)
+						if decoded.Action == "pass" or decoded.Action == "fail" then
+							-- try and piece together a useful test output object with everything in it
+							local test_data = {}
+							test_data.status = decoded.Action
+							test_data.package = decoded.Package
+							test_data.name = decoded.Test
+							local useful_output = state.output[i - 2].Output -- split this on ":" to get filename, line number, and message
+							test_data.message = "blah"
+							test_data.line = 2
+							test_data.file = "deck_test.go"
+							print("capturing test output")
+							table.insert(state.tests, test_data)
+						end
 					end
 				end,
 
 				on_exit = function()
 					local failed = {}
 					for _, test in pairs(state.tests) do
-						if test.line then
-							if not test.success then
-								print("not test success")
-								table.insert(failed, {
-									bufnr = bufnr,
-									lnum = test.line,
-									col = 0,
-									severity = vim.diagnostic.severity.ERROR,
-									source = "go-test",
-									message = "Test Failed",
-									user_data = {},
-								})
-							end
+						-- if test.line then
+						if test.status == "fail" then
+							print("logging failed test")
+							table.insert(failed, {
+								bufnr = bufnr,
+								lnum = test.line,
+								col = 0,
+								severity = vim.diagnostic.severity.ERROR,
+								source = "go-test",
+								message = test.name .. ":" .. test.message,
+								user_data = {},
+							})
 						end
+						-- end
 					end
 					vim.diagnostic.set(ns, bufnr, failed, {})
 				end,
@@ -119,8 +132,8 @@ local attach_go_test = function(bufnr, output_bufnr, command)
 end
 
 vim.api.nvim_create_user_command("GoTestOnSave", function()
-	local bufnr = vim.fn.input("output_buffer: ")
-	attach_go_test(tonumber(vim.api.nvim_get_current_buf()), tonumber(bufnr), { "go", "test", "./...", "-v", "-json" })
+	-- local bufnr = vim.fn.input("output_buffer: ")
+	attach_go_test(tonumber(vim.api.nvim_get_current_buf()), tonumber(2), { "go", "test", "./...", "-v", "-json" }) -- hardcoded to buffer 2 for now since it dont matter
 end, {})
 
 local attach_to_buffer = function(output_bufnr, pattern, command)

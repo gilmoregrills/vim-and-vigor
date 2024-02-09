@@ -206,6 +206,7 @@ alias vimrc="nvim ~/.config/nvim"
 alias zshrc="nvim ~/.zshrc"
 alias reload='source ~/.zshrc;echo "sourced ~/.zshrc"'
 alias :q='exit'
+alias hfcli='huggingface-cli'
 
 # kitty
 alias kdiff="kitty +kitten diff"
@@ -220,6 +221,7 @@ alias gs="git status"
 alias ga="git add"
 alias gb="git branch"
 alias gch="git checkout"
+alias gcm="git commit -m"
 
 function gc() {
   TYPE=$(gum choose "fix" "feat" "chore" "docs" "style" "refactor" "test" "revert")

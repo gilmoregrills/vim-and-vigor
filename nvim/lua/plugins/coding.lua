@@ -277,83 +277,63 @@ return {
 			use_diagnostic_signs = false, -- enabling this will use the signs defined in your lsp client
 		},
 	},
+	{
+		"hrsh7th/nvim-cmp",
+		version = false, -- last release is way too old
+		event = "InsertEnter",
+		dependencies = {
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/cmp-buffer",
+			"hrsh7th/cmp-path",
+			"saadparwaiz1/cmp_luasnip",
+		},
+		opts = function()
+			vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+			local cmp = require("cmp")
+			local defaults = require("cmp.config.default")()
+			return {
+				completion = {
+					completeopt = "menu,menuone,noinsert",
+				},
+				snippet = {
+					expand = function(args)
+						require("luasnip").lsp_expand(args.body)
+					end,
+				},
+				mapping = cmp.mapping.preset.insert({
+					["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+					["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+					["<C-Space>"] = cmp.mapping.complete(),
+					["<C-e>"] = cmp.mapping.abort(),
+					["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+					["<S-CR>"] = cmp.mapping.confirm({
+						behavior = cmp.ConfirmBehavior.Replace,
+						select = true,
+					}), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+				}),
+				sources = cmp.config.sources({
+					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
+					{ name = "buffer" },
+					{ name = "path" },
+				}),
+				experimental = {
+					ghost_text = {
+						hl_group = "CmpGhostText",
+					},
+				},
+				sorting = defaults.sorting,
+			}
+		end,
+	},
 	-- {
-	-- 	"huggingface/hfcc.nvim",
+	-- 	"huggingface/llm.nvim",
 	-- 	opts = {
 	-- 		model = "bigcode/starcoder",
+	-- 		model = "codellama/CodeLlama-34b-hf",
 	-- 		api_token = os.getenv("HUGGING_FACE_HUB_TOKEN"),
-	-- 		accept_keymap = "<C-a>",
-	-- 		dismiss_keymap = "<C-A>",
-	-- 		fim = {
-	-- 			enabled = true,
-	-- 			prefix = "<fim_prefix>",
-	-- 			middle = "<fim_middle>",
-	-- 			suffix = "<fim_suffix>",
-	-- 		},
+	-- 		accept_keymap = "<CR>",
+	-- 		dismiss_keymap = "<S-CR>",
 	-- 	},
-	-- },
-	-- { "nvim-neotest/neotest-plenary" },
-	-- { "nvim-neotest/neotest-go" },
-	-- {
-	-- 	"nvim-neotest/neotest",
-	-- 	opts = {
-	-- 		adapters = {
-	-- 			"neotest-go",
-	-- 		},
-	-- 		status = { virtual_text = true },
-	-- 		output = { open_on_run = false },
-	-- 		output_panel = {
-	-- 			enabled = true,
-	-- 			open = "botright split | resize 15",
-	-- 		},
-	-- 		quickfix = {
-	-- 			enabled = true,
-	-- 			open = function()
-	-- 				vim.cmd("Trouble quickfix")
-	-- 			end,
-	-- 		},
-	-- 	},
-	-- 	config = function(_, opts)
-	-- 		local neotest_ns = vim.api.nvim_create_namespace("neotest")
-	-- 		vim.diagnostic.config({
-	-- 			virtual_text = {
-	-- 				format = function(diagnostic)
-	-- 					-- Replace newline and tab characters with space for more compact diagnostics
-	-- 					local message =
-	-- 						diagnostic.message:gsub("\n", " "):gsub("\t", " "):gsub("%s+", " "):gsub("^%s+", "")
-	-- 					return message
-	-- 				end,
-	-- 			},
-	-- 		}, neotest_ns)
-
-	-- 		if opts.adapters then
-	-- 			local adapters = {}
-	-- 			for name, config in pairs(opts.adapters or {}) do
-	-- 				if type(name) == "number" then
-	-- 					if type(config) == "string" then
-	-- 						config = require(config)
-	-- 					end
-	-- 					adapters[#adapters + 1] = config
-	-- 				elseif config ~= false then
-	-- 					local adapter = require(name)
-	-- 					if type(config) == "table" and not vim.tbl_isempty(config) then
-	-- 						local meta = getmetatable(adapter)
-	-- 						if adapter.setup then
-	-- 							adapter.setup(config)
-	-- 						elseif meta and meta.__call then
-	-- 							adapter(config)
-	-- 						else
-	-- 							error("Adapter " .. name .. " does not support setup")
-	-- 						end
-	-- 					end
-	-- 					adapters[#adapters + 1] = adapter
-	-- 				end
-	-- 			end
-	-- 			opts.adapters = adapters
-	-- 		end
-
-	-- 		require("neotest").setup(opts)
-	-- 	end,
-	-- 	-- stylua: ignore
 	-- },
 }

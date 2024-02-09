@@ -188,4 +188,84 @@ return {
 			},
 		},
 	},
+	{
+		"epwalsh/obsidian.nvim",
+		version = "*", -- recommended, use latest release instead of latest commit
+		lazy = true,
+		ft = "markdown",
+		-- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
+		-- event = {
+		--   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+		--   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
+		--   "BufReadPre path/to/my-vault/**.md",
+		--   "BufNewFile path/to/my-vault/**.md",
+		-- },
+		dependencies = {
+			-- Required.
+			"nvim-lua/plenary.nvim",
+			"nvim-telescope/telescope.nvim",
+			"hrsh7th/nvim-cmp",
+		},
+		opts = {
+			workspaces = {
+				{
+					name = "personal",
+					path = "/Users/robinyonge/obsidian/personal/",
+				},
+			},
+			daily_notes = {
+				-- Optional, if you keep daily notes in a separate directory.
+				folder = "daily",
+				template = "daily.md",
+				date_format = "%d-%m-%y",
+			},
+			templates = {
+				subdir = "templates",
+			},
+		},
+	},
+	{
+		"vimwiki/vimwiki",
+		version = "*", -- recommended, use latest release instead of latest commit
+		lazy = false,
+		init = function()
+			vim.cmd([[
+        let wiki_1 = {}
+        let wiki_1.path = '~/vimwiki/'
+        let wiki_1.syntax = 'markdown'
+        let wiki_1.ext = '.md'
+
+        let g:vimwiki_list = [wiki_1]
+        let g:vimwiki_ext2syntax = {'.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
+
+        let g:vimwiki_global_ext = 0
+        let g:vimwiki_markdown_link_ext = 1
+        let g:vimwiki_folding = 'expr'
+        autocmd filetype markdown setlocal foldmethod=expr
+        autocmd filetype markdown setlocal nofoldenable
+        let g:markdown_folding = 1
+        let g:markdown_fenced_languages = ['py=python', 'json', 'yml=yaml', 'bash=sh']
+      ]])
+		end,
+	},
+	{
+		"masukomi/vim-markdown-folding",
+		version = "*", -- recommended, use latest release instead of latest commit
+		lazy = false,
+		init = function()
+			vim.cmd([[
+        if has("autocmd")
+          filetype plugin indent on
+        endif
+      ]])
+		end,
+	},
+	{
+		"folke/zen-mode.nvim",
+		opts = {
+
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+		},
+	},
 }

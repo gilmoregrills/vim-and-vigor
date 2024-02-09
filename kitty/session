@@ -1,0 +1,8 @@
+new_tab notes
+
+cd /Users/robinyonge/obsidian/personal/
+launch nvim -c "Neotree filesystem show" /Users/robinyonge/obsidian/personal/nvim-start.md
+
+
+new_tab
+focus
