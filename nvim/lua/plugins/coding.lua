@@ -4,7 +4,7 @@ return {
 	-- pairs of quotes and brackets and stuff
 	{
 		"echasnovski/mini.pairs",
-		event = "VeryLazy",
+		-- event = "VeryLazy",
 		config = function(_, opts)
 			require("mini.pairs").setup({})
 		end,
@@ -14,7 +14,14 @@ return {
 		"echasnovski/mini.comment",
 		version = "*",
 		config = function(_, opts)
-			require("mini.comment").setup({})
+			require("mini.comment").setup({
+				mappings = {
+					-- Toggle comment on current line
+					comment_line = "<Leader>c",
+					-- Toggle comment on visual selection
+					comment_visual = "<Leader>c",
+				},
+			})
 		end,
 	},
 	-- surround
@@ -40,13 +47,13 @@ return {
 		end,
 		opts = {
 			mappings = {
-				add = "gza", -- Add surrounding in Normal and Visual modes
-				delete = "gzd", -- Delete surrounding
-				find = "gzf", -- Find surrounding (to the right)
-				find_left = "gzF", -- Find surrounding (to the left)
-				highlight = "gzh", -- Highlight surrounding
-				replace = "gzr", -- Replace surrounding
-				update_n_lines = "gzn", -- Update `n_lines`
+				add = "<Leader>sa", -- Add surrounding in Normal and Visual modes
+				delete = "<Leader>sd", -- Delete surrounding
+				find = "<Leader>sf", -- Find surrounding (to the right)
+				find_left = "<Leader>sF", -- Find surrounding (to the left)
+				highlight = "<Leader>sh", -- Highlight surrounding
+				replace = "<Leader>sr", -- Replace surrounding
+				update_n_lines = "<Leader>sn", -- Update `n_lines`
 			},
 		},
 	},
@@ -155,31 +162,9 @@ return {
 			end
 		end,
 	},
-	-- language server plugin manager
-	-- {
-	-- 	"williamboman/mason.nvim",
-	-- 	build = ":MasonUpdate", -- :MasonUpdate updates registry contents
-	-- 	config = function(_, opts)
-	-- 		require("mason").setup({})
-	-- 	end,
-	-- },
-	-- -- mason/lspconfig compatibility
-	-- {
-	-- 	"williamboman/mason-lspconfig.nvim",
-	-- 	config = function(_, opts)
-	-- 		require("mason-lspconfig").setup({})
-	-- 	end,
-	-- 	dependencies = {
-	-- 		"williamboman/mason.nvim",
-	-- 	},
-	-- },
 	-- lspconfig
 	{
 		"neovim/nvim-lspconfig",
-		-- 		dependencies = {
-		-- 			"williamboman/mason.nvim",
-		-- 			"williamboman/mason-lspconfig.nvim",
-		-- 		},
 	},
 	-- formatter, works with mason & treesitter(?)
 	{
@@ -189,6 +174,18 @@ return {
 				logging = true,
 				log_level = vim.log.levels.WARN,
 				filetype = {
+					javascript = {
+						require("formatter.filetypes.javascript").prettier,
+					},
+					javascriptreact = {
+						require("formatter.filetypes.javascriptreact").prettier,
+					},
+					typescript = {
+						require("formatter.filetypes.typescript").prettier,
+					},
+					typescriptreact = {
+						require("formatter.filetypes.typescriptreact").prettier,
+					},
 					lua = {
 						require("formatter.filetypes.lua").stylua,
 						function()
@@ -277,63 +274,59 @@ return {
 			use_diagnostic_signs = false, -- enabling this will use the signs defined in your lsp client
 		},
 	},
-	{
-		"hrsh7th/nvim-cmp",
-		version = false, -- last release is way too old
-		event = "InsertEnter",
-		dependencies = {
-			"hrsh7th/cmp-nvim-lsp",
-			"hrsh7th/cmp-buffer",
-			"hrsh7th/cmp-path",
-			"saadparwaiz1/cmp_luasnip",
-		},
-		opts = function()
-			vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
-			local cmp = require("cmp")
-			local defaults = require("cmp.config.default")()
-			return {
-				completion = {
-					completeopt = "menu,menuone,noinsert",
-				},
-				snippet = {
-					expand = function(args)
-						require("luasnip").lsp_expand(args.body)
-					end,
-				},
-				mapping = cmp.mapping.preset.insert({
-					["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-					["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-					["<C-Space>"] = cmp.mapping.complete(),
-					["<C-e>"] = cmp.mapping.abort(),
-					["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-					["<S-CR>"] = cmp.mapping.confirm({
-						behavior = cmp.ConfirmBehavior.Replace,
-						select = true,
-					}), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-				}),
-				sources = cmp.config.sources({
-					{ name = "nvim_lsp" },
-					{ name = "luasnip" },
-					{ name = "buffer" },
-					{ name = "path" },
-				}),
-				experimental = {
-					ghost_text = {
-						hl_group = "CmpGhostText",
-					},
-				},
-				sorting = defaults.sorting,
-			}
-		end,
-	},
 	-- {
-	-- 	"huggingface/llm.nvim",
-	-- 	opts = {
-	-- 		model = "bigcode/starcoder",
-	-- 		model = "codellama/CodeLlama-34b-hf",
-	-- 		api_token = os.getenv("HUGGING_FACE_HUB_TOKEN"),
-	-- 		accept_keymap = "<CR>",
-	-- 		dismiss_keymap = "<S-CR>",
+	-- 	"hrsh7th/nvim-cmp",
+	-- 	version = false, -- last release is way too old
+	-- 	event = "InsertEnter",
+	-- 	dependencies = {
+	-- 		"hrsh7th/cmp-nvim-lsp",
+	-- 		"hrsh7th/cmp-buffer",
+	-- 		"hrsh7th/cmp-path",
+	-- 		"saadparwaiz1/cmp_luasnip",
 	-- 	},
+	-- 	opts = function()
+	-- 		vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+	-- 		local cmp = require("cmp")
+	-- 		local defaults = require("cmp.config.default")()
+	-- 		return {
+	-- 			completion = {
+	-- 				completeopt = "menu,menuone,noinsert",
+	-- 			},
+	-- 			snippet = {
+	-- 				expand = function(args)
+	-- 					require("luasnip").lsp_expand(args.body)
+	-- 				end,
+	-- 			},
+	-- 			mapping = cmp.mapping.preset.insert({
+	-- 				["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+	-- 				["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+	-- 				["<C-Space>"] = cmp.mapping.complete(),
+	-- 				["<C-e>"] = cmp.mapping.abort(),
+	-- 				["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+	-- 				["<S-CR>"] = cmp.mapping.confirm({
+	-- 					behavior = cmp.ConfirmBehavior.Replace,
+	-- 					select = true,
+	-- 				}), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+	-- 			}),
+	-- 			sources = cmp.config.sources({
+	-- 				{ name = "nvim_lsp" },
+	-- 				{ name = "luasnip" },
+	-- 				{ name = "buffer" },
+	-- 				{ name = "path" },
+	-- 			}),
+	-- 			experimental = {
+	-- 				ghost_text = {
+	-- 					hl_group = "CmpGhostText",
+	-- 				},
+	-- 			},
+	-- 			sorting = defaults.sorting,
+	-- 		}
+	-- 	end,
 	-- },
+	{
+		"github/copilot.vim",
+	},
+	{
+		"junegunn/vim-journal",
+	},
 }

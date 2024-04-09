@@ -1,18 +1,18 @@
 return {
 	-- which-key (needs more work)
-	-- {
-	-- 	"folke/which-key.nvim",
-	-- 	event = "VeryLazy",
-	-- 	init = function()
-	-- 		vim.o.timeout = true
-	-- 		vim.o.timeoutlen = 300
-	-- 	end,
-	-- 	opts = {
-	-- 		-- your configuration comes here
-	-- 		-- or leave it empty to use the default settings
-	-- 		-- refer to the configuration section below
-	-- 	},
-	-- },
+	{
+		"folke/which-key.nvim",
+		-- event = "VeryLazy",
+		init = function()
+			vim.o.timeout = true
+			vim.o.timeoutlen = 300
+		end,
+		opts = {
+			-- your configuration comes here
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+		},
+	},
 	-- lualine, like the old airline but faster
 	{
 		"nvim-lualine/lualine.nvim",
@@ -150,7 +150,7 @@ return {
 	},
 	{
 		"folke/edgy.nvim",
-		event = "VeryLazy",
+		-- event = "VeryLazy",
 		init = function()
 			vim.opt.laststatus = 3
 			vim.opt.splitkeep = "screen"
@@ -175,52 +175,6 @@ return {
 					end,
 				},
 				{ ft = "spectre_panel", size = { height = 0.4 } },
-			},
-			left = {
-				-- Neo-tree filesystem always takes half the screen height
-				{
-					title = "🌳 neotree",
-					ft = "neo-tree",
-					filter = function(buf)
-						return vim.b[buf].neo_tree_source == "filesystem"
-					end,
-				},
-			},
-		},
-	},
-	{
-		"epwalsh/obsidian.nvim",
-		version = "*", -- recommended, use latest release instead of latest commit
-		lazy = true,
-		ft = "markdown",
-		-- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
-		-- event = {
-		--   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-		--   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
-		--   "BufReadPre path/to/my-vault/**.md",
-		--   "BufNewFile path/to/my-vault/**.md",
-		-- },
-		dependencies = {
-			-- Required.
-			"nvim-lua/plenary.nvim",
-			"nvim-telescope/telescope.nvim",
-			"hrsh7th/nvim-cmp",
-		},
-		opts = {
-			workspaces = {
-				{
-					name = "personal",
-					path = "/Users/robinyonge/obsidian/personal/",
-				},
-			},
-			daily_notes = {
-				-- Optional, if you keep daily notes in a separate directory.
-				folder = "daily",
-				template = "daily.md",
-				date_format = "%d-%m-%y",
-			},
-			templates = {
-				subdir = "templates",
 			},
 		},
 	},
@@ -262,10 +216,34 @@ return {
 	},
 	{
 		"folke/zen-mode.nvim",
-		opts = {
-
-			-- or leave it empty to use the default settings
-			-- refer to the configuration section below
+		opts = {},
+	},
+	{
+		"arnarg/todotxt.nvim",
+		dependencies = {
+			"MunifTanjim/nui.nvim",
 		},
+		opts = {
+			todo_file = "/Users/robinyonge/todo/todo.txt",
+			keymap = {
+				quit = "q",
+				toggle_metadata = "m",
+				delete_task = "dd",
+				complete_task = "<Leader>c",
+				edit_task = "ee",
+			},
+		},
+	},
+	{
+		"freitass/todo.txt-vim",
+	},
+	{
+		"echasnovski/mini.starter",
+		version = "*",
+		lazy = false,
+		config = true,
+		init = function()
+			-- require("zen-mode").toggle({})
+		end,
 	},
 }

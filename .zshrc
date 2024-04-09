@@ -1,5 +1,11 @@
 source /Users/robinyonge/code/git/marlonrichert/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
+. "$HOME/.asdf/asdf.sh"
+# append completions to fpath
+fpath=(${ASDF_DIR}/completions $fpath)
+# initialise completions with ZSH's compinit
+autoload -Uz compinit && compinit
+
 # Functions:
 
 function v2g() {
@@ -207,6 +213,7 @@ alias zshrc="nvim ~/.zshrc"
 alias reload='source ~/.zshrc;echo "sourced ~/.zshrc"'
 alias :q='exit'
 alias hfcli='huggingface-cli'
+alias t='todo.sh'
 
 # kitty
 alias kdiff="kitty +kitten diff"
@@ -214,6 +221,12 @@ alias hg="kitty +kitten hyperlinked_grep"
 alias kssh="kitty +kitten ssh"
 alias edit="edit-in-kitty --cwd --type=window"
 
+if test -n "$KITTY_INSTALLATION_DIR"; then
+    export KITTY_SHELL_INTEGRATION="enabled"
+    autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
+    kitty-integration
+    unfunction kitty-integration
+fi
 
 # Git:
 alias g="git"
@@ -386,3 +399,5 @@ if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/
 if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+eval "$(atuin init zsh)"
