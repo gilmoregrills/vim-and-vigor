@@ -302,6 +302,7 @@ alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall F
 alias 1pass='eval $(op signin tractable)'
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias myip='curl http://whatismyip.akamai.com/'
+alias orca='/Users/robinyonge/code/git/hundredrabbits/Orca-c/build/orca'
 
 # load commonly-used secrets as envvars
 source /Users/robinyonge/.bash_secrets
@@ -312,8 +313,7 @@ alias oops='fuck'
 # PATH garbage
 export GOPATH=$HOME/go
 export GOBIN="/Users/robinyonge/go/bin"
-export PATH="$PATH:$HOME/.poetry/bin:/usr/local/sbin:$HOME/.cargo/bin:/Users/robinyonge/code/git/tractable/cli-tools/bin:/Users/robinyonge/.kafka/current/bin:${KREW_ROOT:-$HOME/.krew}/bin:$GOBIN:/usr/local/opt/findutils/libexec/gnubin:/Users/robinyonge/.local/bin"
-fpath=($fpath "/Users/robinyonge/.zfunctions")
+export PATH="$PATH:$HOME/.poetry/bin:/usr/local/sbin:$HOME/.cargo/bin:/Users/robinyonge/code/git/tractable/cli-tools/bin:/Users/robinyonge/.kafka/current/bin:${KREW_ROOT:-$HOME/.krew}/bin:$GOBIN:/usr/local/opt/findutils/libexec/gnubin:/Users/robinyonge/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin"
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
