@@ -185,9 +185,10 @@ return {
 		init = function()
 			vim.cmd([[
         let wiki_1 = {}
-        let wiki_1.path = '~/vimwiki/'
+        let wiki_1.path = '~/code/git/gilmoregrills/gilmoregrills.github.io'
         let wiki_1.syntax = 'markdown'
         let wiki_1.ext = '.md'
+        let wiki_1.diary_rel_path = '_private/diary'
 
         let g:vimwiki_list = [wiki_1]
         let g:vimwiki_ext2syntax = {'.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
@@ -245,5 +246,8 @@ return {
 		init = function()
 			-- require("zen-mode").toggle({})
 		end,
+	},
+	{
+		"rktjmp/lush.nvim",
 	},
 }
