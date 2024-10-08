@@ -11,6 +11,11 @@ return {
 			-- your configuration comes here
 			-- or leave it empty to use the default settings
 			-- refer to the configuration section below
+			win = {
+				border = "single",
+				padding = { 0, 0 },
+				title = false,
+			},
 		},
 	},
 	-- lualine, like the old airline but faster
@@ -25,7 +30,6 @@ return {
 		"MunifTanjim/nui.nvim",
 		lazy = true,
 	},
-	-- tree file explorer on left
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
@@ -92,7 +96,7 @@ return {
 						return require("neo-tree.sources.common.components").icon(config, node, state)
 					end,
 				},
-				bind_to_cwd = false,
+				bind_to_cwd = true,
 				use_libuv_file_watcher = true,
 				filtered_items = {
 					visible = true, -- when true, they will just be displayed differently than normal items
@@ -149,6 +153,10 @@ return {
 		},
 	},
 	{
+		"nvim-telescope/telescope-file-browser.nvim",
+		dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+	},
+	{
 		"folke/edgy.nvim",
 		-- event = "VeryLazy",
 		init = function()
@@ -189,6 +197,7 @@ return {
         let wiki_1.syntax = 'markdown'
         let wiki_1.ext = '.md'
         let wiki_1.diary_rel_path = '_private/diary'
+        let wiki_1.diary_frequency = 'daily'
 
         let g:vimwiki_list = [wiki_1]
         let g:vimwiki_ext2syntax = {'.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
@@ -214,29 +223,6 @@ return {
         endif
       ]])
 		end,
-	},
-	{
-		"folke/zen-mode.nvim",
-		opts = {},
-	},
-	{
-		"arnarg/todotxt.nvim",
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-		},
-		opts = {
-			todo_file = "/Users/robinyonge/todo/todo.txt",
-			keymap = {
-				quit = "q",
-				toggle_metadata = "m",
-				delete_task = "dd",
-				complete_task = "<Leader>c",
-				edit_task = "ee",
-			},
-		},
-	},
-	{
-		"freitass/todo.txt-vim",
 	},
 	{
 		"echasnovski/mini.starter",

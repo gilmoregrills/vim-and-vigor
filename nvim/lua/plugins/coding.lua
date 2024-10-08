@@ -241,7 +241,29 @@ return {
 						require("formatter.filetypes.python").isort,
 					},
 					yaml = {
-						require("formatter.filetypes.yaml").pyaml,
+						require("formatter.filetypes.yaml"),
+						function()
+							return {
+								exe = "yq",
+								args = {
+									".",
+									"--prettyPrint",
+								},
+								stdin = true,
+							}
+						end,
+					},
+					json = {
+						require("formatter.filetypes.json"),
+						function()
+							return {
+								exe = "jq",
+								args = {
+									".",
+								},
+								stdin = true,
+							}
+						end,
 					},
 					["*"] = {
 						require("formatter.filetypes.any").remove_trailing_whitespace,
@@ -259,11 +281,20 @@ return {
 		"folke/trouble.nvim",
 		-- dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = {
-			icons = false,
-			auto_open = true,
-			auto_close = true,
-			fold_open = "v",
-			fold_closed = ">",
+			modes = {
+				diagnostics = {
+					auto_open = true,
+					auto_close = true,
+				},
+			},
+			icons = {
+				indent = {
+					fold_open = "",
+					fold_closed = "",
+				},
+				folder_closed = ">",
+				folder_open = "v",
+			},
 			signs = {
 				-- icons / text used for a diagnostic
 				error = "error",
@@ -325,8 +356,5 @@ return {
 	-- },
 	{
 		"github/copilot.vim",
-	},
-	{
-		"junegunn/vim-journal",
 	},
 }

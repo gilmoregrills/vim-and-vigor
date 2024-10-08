@@ -207,7 +207,6 @@ alias cssh="csshx"
 alias idGroups="id -a | sed 's|,|\n|g'"
 alias find="gfind"
 alias pico8="pico8 -home ~/pico8/"
-alias python="python3"
 alias vimrc="nvim ~/.config/nvim"
 alias zshrc="nvim ~/.zshrc"
 alias reload='source ~/.zshrc;echo "sourced ~/.zshrc"'

@@ -6,12 +6,14 @@ return {
 		config = function()
 			-- load the colorscheme here
 			vim.cmd([[colorscheme fairyfloss]])
-			vim.cmd([[set termguicolors]])
+			-- vim.cmd([[set termguicolors]])
 			vim.cmd([[highlight Comment cterm=italic gui=italic]])
 			vim.cmd([[highlight Function cterm=italic gui=italic]])
 			vim.cmd([[highlight Keyword cterm=italic gui=italic]])
 			vim.cmd([[highlight Type cterm=italic gui=italic]])
 			vim.cmd([[highlight Class cterm=italic gui=italic]])
+			vim.cmd([[hi NormalFloat guibg=bg]])
+			vim.cmd([[hi FloatBorder guibg=bg]])
 		end,
 	},
 }

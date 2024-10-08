@@ -1,8 +1,2 @@
-new_tab notes
-
-cd /Users/robinyonge/obsidian/personal/
-launch nvim -c "Neotree filesystem show" /Users/robinyonge/obsidian/personal/nvim-start.md
-
-
-new_tab
-focus
+cd /Users/robinyonge/code/git/gilmoregrills/gilmoregrills.github.io
+launch nvim -c "ZenMode" /Users/robinyonge/code/git/gilmoregrills/gilmoregrills.github.io/index.md

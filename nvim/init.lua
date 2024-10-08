@@ -14,9 +14,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("plugins", {
-	ui = {
-		border = "shadow",
-	},
+	-- ui = {
+	-- 	border = "shadow",
+	-- },
 })
 
 require("keymap")
@@ -31,6 +31,8 @@ vim.api.nvim_create_autocmd("TabNewEntered", {
 vim.cmd([[
 filetype plugin on
 syntax on
+au BufNewFile,BufFilePre,BufRead *.md set filetype=markdown
+au BufNewFile,BufFilePre,BufRead *.md set nonumber
 
 set tabstop=2 shiftwidth=2 expandtab softtabstop=2
 
@@ -39,8 +41,11 @@ augroup FormatAutogroup
   autocmd BufWritePost * FormatWrite
 augroup END
 
-
 set number
+
+autocmd TermOpen * setlocal nonumber norelativenumber
+autocmd TermOpen * nnoremap <buffer> <C-c> i<C-c>
+autocmd TermOpen * startinsert
 ]])
 
 require("lint").linters_by_ft = {

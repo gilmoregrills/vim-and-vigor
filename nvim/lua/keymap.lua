@@ -6,51 +6,26 @@ local builtin = require("telescope.builtin")
 -- registering descriptions/flavour for which-key
 local wk = require("which-key")
 wk.register({
-	["<tab>"] = {
-		name = "tabs",
-		["2"] = "which_key_ignore",
-		["3"] = "which_key_ignore",
-		["4"] = "which_key_ignore",
-		["5"] = "which_key_ignore",
-		["6"] = "which_key_ignore",
-		["7"] = "which_key_ignore",
-		["8"] = "which_key_ignore",
-		["9"] = "which_key_ignore",
-	},
-	f = {
-		name = "file/find",
-	},
-	w = {
-		name = "wiki",
-		g = {
-			name = "git",
-		},
-		["<space>"] = {
-			name = "diary",
-		},
-	},
-	t = {
-		name = "todo.txt",
-	},
-	g = {
-		name = "git(hub)",
-		c = {
-			name = "copilot",
-		},
-	},
-	d = {
-		name = "diagnostics",
-	},
-	s = {
-		name = "surround",
-	},
-	c = {
-		name = "comment",
-		c = {
-			name = "comment",
-		},
-	},
-}, { prefix = "<leader>" })
+	{ "<leader>", desc = "<leader><tab>2", hidden = true },
+	{ "<leader>", group = "copilot" },
+	{ "<leader>", group = "git(hub)" },
+	{ "<leader>", group = "file/find" },
+	{ "<leader>", group = "surround" },
+	{ "<leader>", group = "wiki" },
+	{ "<leader>", group = "todo.txt" },
+	{ "<leader>", group = "diary" },
+	{ "<leader>", group = "git" },
+	{ "<leader>", group = "diagnostics" },
+	{ "<leader>", desc = "<leader><tab>9", hidden = true },
+	{ "<leader>", desc = "<leader><tab>4", hidden = true },
+	{ "<leader>", desc = "<leader><tab>3", hidden = true },
+	{ "<leader>", desc = "<leader><tab>5", hidden = true },
+	{ "<leader>", desc = "<leader><tab>7", hidden = true },
+	{ "<leader>", desc = "<leader><tab>6", hidden = true },
+	{ "<leader>", desc = "<leader><tab>8", hidden = true },
+	{ "<leader>", group = "tabs" },
+	{ "<leader>", group = "comment", mode = { "n", "n" } },
+})
 
 -- Move to window using the <ctrl> hjkl keys
 map("n", "<C-h>", "<C-w>h", { desc = "Go to left window", remap = true })
@@ -92,7 +67,7 @@ map("n", "<Leader>x", ":wq<CR>", { desc = "wq" })
 
 -- Neotree
 -- map("n", "<leader>fn", ":Neotree toggle<CR>", { desc = "neotree toggle" })
-map("n", "<leader>fn", ":Neotree float filesystem<CR>", { desc = "neotree toggle" })
+map("n", "<leader>fn", ":Neotree filesystem current<CR>", { desc = "neotree toggle" })
 map("n", "<leader>gg", ":Neotree float git_status<CR>", { desc = "neotree git_status" })
 
 -- Todos
@@ -105,6 +80,21 @@ map("n", "<leader>dw", ":TroubleToggle workspace_diagnostics<CR>", { desc = "tog
 map("n", "<leader>dw", ":TroubleToggle quickfix<CR>", { desc = "toggle quickfix" })
 map("n", "<leader>dx", ":TroubleClose<CR>", { desc = "close" })
 map("n", "<leader>dr", ":TroubleRefresh<CR>", { desc = "refresh" })
+
+-- vimwiki window management
+map(
+	"n",
+	"<leader>wo",
+	":botright 80vnew /Users/robinyonge/code/git/gilmoregrills/gilmoregrills.github.io/index.md<CR>",
+	{ desc = "open index in new window" }
+)
+
+map(
+	"n",
+	"<leader>ws",
+	":botright 80vnew /Users/robinyonge/code/git/gilmoregrills/gilmoregrills.github.io/_private/scratchpad.md<CR>",
+	{ desc = "open scratchpad in new window" }
+)
 
 -- vimwiki git sync
 map(
@@ -135,3 +125,6 @@ map("n", "<leader>gcv", ":Copilot version<CR>", { desc = "version" })
 map("n", "<leader>gcl", ":Copilot logs<CR>", { desc = "logs" })
 map("i", "<tab>", "<Plug>(copilot-accept-word)")
 map("i", "<C-Tab>", "<Plug>(copilot-accept-line)", { desc = "accept line" })
+
+-- terminal binds
+map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "exit terminal" })
