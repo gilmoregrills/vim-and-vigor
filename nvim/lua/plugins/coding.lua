@@ -283,8 +283,12 @@ return {
 		opts = {
 			modes = {
 				diagnostics = {
-					auto_open = true,
+					auto_open = false,
 					auto_close = true,
+					auto_preview = false,
+					focus = false,
+					follow = true,
+					pinned = true,
 				},
 			},
 			icons = {
@@ -294,6 +298,34 @@ return {
 				},
 				folder_closed = ">",
 				folder_open = "v",
+				kinds = {
+					Array = "[]",
+					Boolean = "bool",
+					Class = "Class",
+					Constant = "const",
+					Constructor = "Const",
+					Enum = "enum",
+					EnumMember = "enumM",
+					Event = "event",
+					Field = "field",
+					File = "file",
+					Function = "func",
+					Interface = "int",
+					Key = "key",
+					Method = "method",
+					Module = "mod",
+					Namespace = "ns",
+					Null = "null",
+					Number = "number",
+					Object = "Obj",
+					Operator = "op",
+					Package = "pkg",
+					Property = "prop",
+					String = "str",
+					Struct = "Str",
+					TypeParameter = "param",
+					Variable = "var",
+				},
 			},
 			signs = {
 				-- icons / text used for a diagnostic

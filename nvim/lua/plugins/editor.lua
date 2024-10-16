@@ -11,10 +11,35 @@ return {
 			-- your configuration comes here
 			-- or leave it empty to use the default settings
 			-- refer to the configuration section below
+			preset = "classic",
 			win = {
 				border = "single",
 				padding = { 0, 0 },
 				title = false,
+			},
+			layout = {
+				align = "center",
+			},
+			icons = {
+				separator = "→",
+				group = "+",
+				ellipsis = "...",
+				breadcrumb = "»",
+				mappings = false,
+				keys = {
+					Tab = "<tab>",
+					Space = "<space>",
+					BS = "<backspace>",
+					Left = "←",
+					Right = "→",
+					Up = "↑",
+					Down = "↓",
+					Esc = "<esc>",
+					Leader = "<leader>",
+				},
+				-- show_help = false,
+				-- show_keys = false,
+				colors = false,
 			},
 		},
 	},
@@ -22,7 +47,12 @@ return {
 	{
 		"nvim-lualine/lualine.nvim",
 		opts = {
-			theme = "auto",
+			theme = auto,
+			extensions = {
+				"trouble",
+				"neo-tree",
+				"lazy",
+			},
 		},
 	},
 	-- nui, extra ui components
@@ -151,6 +181,26 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
+		opts = {
+			defaults = {
+				layout_config = {
+					-- preview_width = 0.5,
+				},
+			},
+			extensions = {
+				file_browser = {
+					-- theme = "ivy",
+					hidden = true,
+					show_hidden = true,
+					disable_devicons = true,
+				},
+			},
+			pickers = {
+				find_files = {
+					-- theme = "ivy",
+				},
+			},
+		},
 	},
 	{
 		"nvim-telescope/telescope-file-browser.nvim",
@@ -164,26 +214,26 @@ return {
 			vim.opt.splitkeep = "screen"
 		end,
 		opts = {
-			animate = {
-				enabled = false,
-			},
-			icons = {
-				closed = "",
-				open = "",
-			},
-			bottom = {
-				"👷‍♀️ trouble",
-				{ ft = "qf", title = "QuickFix" },
-				{
-					ft = "help",
-					size = { height = 20 },
-					-- only show help buffers
-					filter = function(buf)
-						return vim.bo[buf].buftype == "help"
-					end,
-				},
-				{ ft = "spectre_panel", size = { height = 0.4 } },
-			},
+			-- animate = {
+			-- 	enabled = false,
+			-- },
+			-- icons = {
+			-- 	closed = "",
+			-- 	open = "",
+			-- },
+			-- bottom = {
+			-- 	"👷‍♀️ trouble",
+			-- 	{ ft = "qf", title = "QuickFix" },
+			-- 	{
+			-- 		ft = "help",
+			-- 		size = { height = 20 },
+			-- 		-- only show help buffers
+			-- 		filter = function(buf)
+			-- 			return vim.bo[buf].buftype == "help"
+			-- 		end,
+			-- 	},
+			-- 	{ ft = "spectre_panel", size = { height = 0.4 } },
+			-- },
 		},
 	},
 	{

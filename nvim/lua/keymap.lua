@@ -5,26 +5,26 @@ local builtin = require("telescope.builtin")
 
 -- registering descriptions/flavour for which-key
 local wk = require("which-key")
-wk.register({
-	{ "<leader>", desc = "<leader><tab>2", hidden = true },
-	{ "<leader>", group = "copilot" },
-	{ "<leader>", group = "git(hub)" },
-	{ "<leader>", group = "file/find" },
-	{ "<leader>", group = "surround" },
-	{ "<leader>", group = "wiki" },
-	{ "<leader>", group = "todo.txt" },
-	{ "<leader>", group = "diary" },
-	{ "<leader>", group = "git" },
-	{ "<leader>", group = "diagnostics" },
-	{ "<leader>", desc = "<leader><tab>9", hidden = true },
-	{ "<leader>", desc = "<leader><tab>4", hidden = true },
-	{ "<leader>", desc = "<leader><tab>3", hidden = true },
-	{ "<leader>", desc = "<leader><tab>5", hidden = true },
-	{ "<leader>", desc = "<leader><tab>7", hidden = true },
-	{ "<leader>", desc = "<leader><tab>6", hidden = true },
-	{ "<leader>", desc = "<leader><tab>8", hidden = true },
-	{ "<leader>", group = "tabs" },
-	{ "<leader>", group = "comment", mode = { "n", "n" } },
+wk.add({
+	{ "<leader>gc", group = "copilot" },
+	{ "<leader>g", group = "git(hub)" },
+	{ "<leader>f", group = "file/find" },
+	{ "<leader>s", group = "surround" },
+	{ "<leader>w", group = "wiki" },
+	{ "<leader>t", group = "todo.txt" },
+	{ "<leader>w<leader>", group = "diary" },
+	{ "<leader>d", group = "diagnostics" },
+	{ "<leader><tab>9", desc = "<leader><tab>9", hidden = true },
+	{ "<leader><tab>4", desc = "<leader><tab>4", hidden = true },
+	{ "<leader><tab>3", desc = "<leader><tab>3", hidden = true },
+	{ "<leader><tab>5", desc = "<leader><tab>5", hidden = true },
+	{ "<leader><tab>7", desc = "<leader><tab>7", hidden = true },
+	{ "<leader><tab>6", desc = "<leader><tab>6", hidden = true },
+	{ "<leader><tab>8", desc = "<leader><tab>8", hidden = true },
+	{ "<leader><tab>2", desc = "<leader><tab>2", hidden = true },
+	{ "<leader><tab>1", desc = "<leader><tab>1", hidden = true },
+	{ "<leader><tab>", group = "tabs" },
+	{ "<leader>c", desc = "comment", mode = { "n", "n" } },
 })
 
 -- Move to window using the <ctrl> hjkl keys
@@ -67,7 +67,9 @@ map("n", "<Leader>x", ":wq<CR>", { desc = "wq" })
 
 -- Neotree
 -- map("n", "<leader>fn", ":Neotree toggle<CR>", { desc = "neotree toggle" })
-map("n", "<leader>fn", ":Neotree filesystem current<CR>", { desc = "neotree toggle" })
+-- map("n", "<leader>fn", ":Neotree filesystem current<CR>", { desc = "neotree toggle" })
+map("n", "<leader>fn", ":Neotree filesystem float<CR>", { desc = "neotree toggle" })
+-- map("n", "<leader>fn", ":Telescope file_browser<CR>", { desc = "file browser" })
 map("n", "<leader>gg", ":Neotree float git_status<CR>", { desc = "neotree git_status" })
 
 -- Todos
@@ -75,11 +77,10 @@ map("n", "<leader>tt", ":17sp /Users/robinyonge/todo/todo.txt<CR>", { desc = "op
 map("n", "<leader>tv", ":50vs /Users/robinyonge/todo/todo.txt<CR>", { desc = "open vertical" })
 
 -- Trouble
-map("n", "<leader>dt", ":TroubleToggle document_diagnostics<CR>", { desc = "toggle for document" })
-map("n", "<leader>dw", ":TroubleToggle workspace_diagnostics<CR>", { desc = "toggle for workspace" })
-map("n", "<leader>dw", ":TroubleToggle quickfix<CR>", { desc = "toggle quickfix" })
-map("n", "<leader>dx", ":TroubleClose<CR>", { desc = "close" })
-map("n", "<leader>dr", ":TroubleRefresh<CR>", { desc = "refresh" })
+map("n", "<leader>dt", ":Trouble diagnostics toggle<CR>", { desc = "diagnostics toggle" })
+map("n", "<leader>do", ":Trouble diagnostics open<CR>", { desc = "diagnostics open" })
+map("n", "<leader>dc", ":Trouble diagnostics close<CR>", { desc = "diagnostics close" })
+map("n", "<leader>dr", ":Trouble diagnostics refresh<CR>", { desc = "diagnostics refresh" })
 
 -- vimwiki window management
 map(
