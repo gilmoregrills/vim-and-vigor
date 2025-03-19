@@ -6,63 +6,6 @@ fpath=(${ASDF_DIR}/completions $fpath)
 # initialise completions with ZSH's compinit
 autoload -Uz compinit && compinit
 
-# Functions:
-
-function v2g() {
-    src="" # required
-    target="" # optional (defaults to source file name)
-    resolution="" # optional (defaults to source video resolution)
-    fps=10 # optional (defaults to 10 fps -- helps drop frames)
-
-    while [ $# -gt 0 ]; do
-        if [[ $1 == *"--"* ]]; then
-                param="${1/--/}"
-                declare $param="$2"
-        fi
-        shift
-    done
-
-    if [[ -z $src ]]; then
-        echo -e "\nPlease call 'v2g --src <source video file>' to run this command\n"
-        return 1
-    fi
-
-    if [[ -z $target ]]; then
-        target=$src
-    fi
-
-    basename=${target%.*}
-    [[ ${#basename} = 0 ]] && basename=$target
-    target="$basename.gif"
-
-    if [[ -n $fps ]]; then
-        fps="-r $fps"
-    fi
-
-    if [[ -n $resolution ]]; then
-        resolution="-s $resolution"
-    fi
-
-    runcommand="ffmpeg -i "$src" -pix_fmt rgb8 $fps $resolution "$target" && gifsicle -O3 "$target" -o "$target""
-
-    echo ""
-    echo ".------------------------."
-    echo "|\\\\////////       90 min |"
-    echo "| \\/  __  ______  __     |"
-    echo "|    /  \|\.....|/  \    |"
-    echo "|    \__/|/_____|\__/    |"
-    echo "| A                      |"
-    echo "|    ________________    |"
-    echo "|___/_._o________o_._\___|"
-    echo ""
-    echo "ツ running >> $runcommand"
-    echo "ツ ..."
-    echo ""
-
-    eval " $runcommand"
-    osascript -e "display notification \"$target successfully converted and saved\" with title \"v2g complete\""
-}
-
 function getPublicKey() {
   ssh-keygen -y -f ${1}
 }
@@ -199,12 +142,10 @@ function gSuiteSA() {
 #
 
 # General:
-alias shebang='echo "#!/usr/bin/env bash"'
 alias watch="watch "
 alias vim="nvim"
 alias sed="gsed"
 alias cssh="csshx"
-alias idGroups="id -a | sed 's|,|\n|g'"
 alias find="gfind"
 alias pico8="pico8 -home ~/pico8/"
 alias vimrc="nvim ~/.config/nvim"
@@ -212,20 +153,6 @@ alias zshrc="nvim ~/.zshrc"
 alias reload='source ~/.zshrc;echo "sourced ~/.zshrc"'
 alias :q='exit'
 alias hfcli='huggingface-cli'
-alias t='todo.sh'
-
-# kitty
-alias kdiff="kitty +kitten diff"
-alias hg="kitty +kitten hyperlinked_grep"
-alias kssh="kitty +kitten ssh"
-alias edit="edit-in-kitty --cwd --type=window"
-
-if test -n "$KITTY_INSTALLATION_DIR"; then
-    export KITTY_SHELL_INTEGRATION="enabled"
-    autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
-    kitty-integration
-    unfunction kitty-integration
-fi
 
 # Git:
 alias g="git"
@@ -234,18 +161,6 @@ alias ga="git add"
 alias gb="git branch"
 alias gch="git checkout"
 alias gcm="git commit -m"
-
-function gc() {
-  TYPE=$(gum choose "fix" "feat" "chore" "docs" "style" "refactor" "test" "revert")
-  # test -n "$SCOPE" && SCOPE="($SCOPE)"
-  while True ; do
-    SUMMARY=$(gum input --value "$TYPE: " --placeholder "Summary of this change")
-    [[ ${#SUMMARY} -le 50 ]] && break
-    echo "Sorry that commit summary was ${#SUMMARY} characters, please try to keep it below 50."
-  done
-  DESCRIPTION=$(gum write --placeholder "Details of this change (CTRL+D to finish)")
-  gum confirm "Commit changes?" && git commit -m "$SUMMARY" -m "$DESCRIPTION"
-}
 
 function gchm() {
   ORIGIN=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
@@ -263,6 +178,7 @@ function gresetm() {
   git fetch origin
   git reset --hard origin/${PRIMARY_BRANCH}
 }
+
 function tclone() {
   git clone git@github.com:tractableai/${1}.git
 };
@@ -274,7 +190,7 @@ alias tfplan="terraform plan -no-color"
 alias tfapply="terraform apply -no-color -auto-approve"
 
 # Kubernetes
-alias kuebctl="kubectl" # most common typo lmao
+alias kuebctl="kubectl"
 alias unset_kubecontext="kubectl config unset current-context"
 export MINIKUBE_IN_STYLE=1
 export KUBE_EDITOR=nvim
@@ -285,13 +201,13 @@ alias dockerKillZombies="docker ps | grep hours | awk '{print $1}' | xargs docke
 alias dockerHardReset="docker ps -q | xargs -L1 docker stop && test -z \"$(docker ps -q 2>/dev/null)\" && osascript -e 'quit app \"Docker\"' && open --background -a Docker"
 
 # Easier navigation: .., ..., ...., ....., ~ and -
-alias ls="exa --across"
+alias ls="eza --across"
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 alias -- -="cd -"                  # Go to previous dir with -
-alias ll="exa -la --git"
+alias ll="eza -la --git"
 
 # OSX
 alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'

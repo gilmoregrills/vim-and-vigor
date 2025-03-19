@@ -33,11 +33,11 @@ return {
 			local opts = require("lazy.core.plugin").values(plugin, "opts", false)
 			local mappings = {
 				{ opts.mappings.add, desc = "Add surrounding", mode = { "n", "v" } },
-				{ opts.mappings.delete, desc = "Delete surrounding" },
+				{ opts.mappings.delete, desc = "Delete surrounding", mode = { "n", "v" } },
 				{ opts.mappings.find, desc = "Find right surrounding" },
 				{ opts.mappings.find_left, desc = "Find left surrounding" },
 				{ opts.mappings.highlight, desc = "Highlight surrounding" },
-				{ opts.mappings.replace, desc = "Replace surrounding" },
+				{ opts.mappings.replace, desc = "Replace surrounding", mode = { "n", "v" } },
 				{ opts.mappings.update_n_lines, desc = "Update `MiniSurround.config.n_lines`" },
 			}
 			mappings = vim.tbl_filter(function(m)
@@ -337,56 +337,27 @@ return {
 			use_diagnostic_signs = false, -- enabling this will use the signs defined in your lsp client
 		},
 	},
-	-- {
-	-- 	"hrsh7th/nvim-cmp",
-	-- 	version = false, -- last release is way too old
-	-- 	event = "InsertEnter",
-	-- 	dependencies = {
-	-- 		"hrsh7th/cmp-nvim-lsp",
-	-- 		"hrsh7th/cmp-buffer",
-	-- 		"hrsh7th/cmp-path",
-	-- 		"saadparwaiz1/cmp_luasnip",
-	-- 	},
-	-- 	opts = function()
-	-- 		vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
-	-- 		local cmp = require("cmp")
-	-- 		local defaults = require("cmp.config.default")()
-	-- 		return {
-	-- 			completion = {
-	-- 				completeopt = "menu,menuone,noinsert",
-	-- 			},
-	-- 			snippet = {
-	-- 				expand = function(args)
-	-- 					require("luasnip").lsp_expand(args.body)
-	-- 				end,
-	-- 			},
-	-- 			mapping = cmp.mapping.preset.insert({
-	-- 				["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-	-- 				["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-	-- 				["<C-Space>"] = cmp.mapping.complete(),
-	-- 				["<C-e>"] = cmp.mapping.abort(),
-	-- 				["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-	-- 				["<S-CR>"] = cmp.mapping.confirm({
-	-- 					behavior = cmp.ConfirmBehavior.Replace,
-	-- 					select = true,
-	-- 				}), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-	-- 			}),
-	-- 			sources = cmp.config.sources({
-	-- 				{ name = "nvim_lsp" },
-	-- 				{ name = "luasnip" },
-	-- 				{ name = "buffer" },
-	-- 				{ name = "path" },
-	-- 			}),
-	-- 			experimental = {
-	-- 				ghost_text = {
-	-- 					hl_group = "CmpGhostText",
-	-- 				},
-	-- 			},
-	-- 			sorting = defaults.sorting,
-	-- 		}
-	-- 	end,
-	-- },
 	{
-		"github/copilot.vim",
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
+		build = ":Copilot auth",
+		event = "BufReadPost",
+		opts = {
+			suggestion = {
+				enabled = not vim.g.ai_cmp,
+				auto_trigger = true,
+				hide_during_completion = vim.g.ai_cmp,
+				keymap = {
+					accept_word = "<Tab>",
+					next = "<M-]>",
+					prev = "<M-[>",
+				},
+			},
+			panel = { enabled = true },
+			filetypes = {
+				gitcommit = true,
+				gitrebase = true,
+			},
+		},
 	},
 }

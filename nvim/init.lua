@@ -13,11 +13,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup("plugins", {
-	-- ui = {
-	-- 	border = "shadow",
-	-- },
-})
+require("lazy").setup("plugins", {})
 
 require("keymap")
 
@@ -35,6 +31,7 @@ au BufNewFile,BufFilePre,BufRead *.md set filetype=markdown
 au BufNewFile,BufFilePre,BufRead *.md set nonumber
 
 set tabstop=2 shiftwidth=2 expandtab softtabstop=2
+set guifont=Dank\ Mono:h16
 
 augroup FormatAutogroup
   autocmd!

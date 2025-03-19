@@ -8,10 +8,10 @@ local wk = require("which-key")
 wk.add({
 	{ "<leader>gc", group = "copilot" },
 	{ "<leader>g", group = "git(hub)" },
-	{ "<leader>f", group = "file/find" },
+	{ "<leader>f", group = "find/file" },
 	{ "<leader>s", group = "surround" },
 	{ "<leader>w", group = "wiki" },
-	{ "<leader>t", group = "todo.txt" },
+	{ "<leader>t", group = "terminal" },
 	{ "<leader>w<leader>", group = "diary" },
 	{ "<leader>d", group = "diagnostics" },
 	{ "<leader><tab>9", desc = "<leader><tab>9", hidden = true },
@@ -25,6 +25,9 @@ wk.add({
 	{ "<leader><tab>1", desc = "<leader><tab>1", hidden = true },
 	{ "<leader><tab>", group = "tabs" },
 	{ "<leader>c", desc = "comment", mode = { "n", "n" } },
+	{ "<leader>l", group = "lists" },
+	{ "<leader>h", group = "helpers" },
+	{ "<leader>hd", group = "insert dates" },
 })
 
 -- Move to window using the <ctrl> hjkl keys
@@ -65,16 +68,14 @@ map("n", "<leader>fh", builtin.help_tags, { desc = "telescope help_tags" })
 map("n", "<Leader>a", ":wqa<CR>", { desc = "wqa" })
 map("n", "<Leader>x", ":wq<CR>", { desc = "wq" })
 
--- Neotree
--- map("n", "<leader>fn", ":Neotree toggle<CR>", { desc = "neotree toggle" })
--- map("n", "<leader>fn", ":Neotree filesystem current<CR>", { desc = "neotree toggle" })
-map("n", "<leader>fn", ":Neotree filesystem float<CR>", { desc = "neotree toggle" })
--- map("n", "<leader>fn", ":Telescope file_browser<CR>", { desc = "file browser" })
-map("n", "<leader>gg", ":Neotree float git_status<CR>", { desc = "neotree git_status" })
+-- Oil
+map("n", "<leader>fn", ":Oil --float<CR>", { desc = "oil toggle" })
 
--- Todos
-map("n", "<leader>tt", ":17sp /Users/robinyonge/todo/todo.txt<CR>", { desc = "open horizontal" })
-map("n", "<leader>tv", ":50vs /Users/robinyonge/todo/todo.txt<CR>", { desc = "open vertical" })
+-- Terminal
+map("n", "<leader>tt", require("FTerm").toggle, { desc = "toggle" })
+map("n", "<leader>tx", require("FTerm").exit, { desc = "exit" })
+map("n", "<leader>to", require("FTerm").open, { desc = "open" })
+map("n", "<leader>tc", require("FTerm").close, { desc = "close" })
 
 -- Trouble
 map("n", "<leader>dt", ":Trouble diagnostics toggle<CR>", { desc = "diagnostics toggle" })
@@ -83,17 +84,12 @@ map("n", "<leader>dc", ":Trouble diagnostics close<CR>", { desc = "diagnostics c
 map("n", "<leader>dr", ":Trouble diagnostics refresh<CR>", { desc = "diagnostics refresh" })
 
 -- vimwiki window management
-map(
-	"n",
-	"<leader>wo",
-	":botright 80vnew /Users/robinyonge/code/git/gilmoregrills/gilmoregrills.github.io/index.md<CR>",
-	{ desc = "open index in new window" }
-)
+map("n", "<leader>wo", ":botright 80vnew /Volumes/shared/wiki/index.md<CR>", { desc = "open index in new window" })
 
 map(
 	"n",
 	"<leader>ws",
-	":botright 80vnew /Users/robinyonge/code/git/gilmoregrills/gilmoregrills.github.io/_private/scratchpad.md<CR>",
+	":botright 80vnew /Volumes/shared/wiki/_private/scratchpad.md<CR>",
 	{ desc = "open scratchpad in new window" }
 )
 
@@ -101,21 +97,17 @@ map(
 map(
 	"n",
 	"<leader>wgs",
-	":!(cd /Users/robinyonge/vimwiki; /usr/bin/git add -A; /usr/bin/git commit -m 'update'; /usr/bin/git pull; /usr/bin/git push)<CR>",
+	":!(cd /Volumes/shared/wiki; /usr/bin/git add -A; /usr/bin/git commit -m 'update'; /usr/bin/git pull; /usr/bin/git push)<CR>",
 	{ desc = "git sync" }
 )
 map(
 	"n",
 	"<leader>wgc",
-	":!(cd /Users/robinyonge/vimwiki; /usr/bin/git add -A; /usr/bin/git commit -m 'update')<CR>",
+	":!(cd /Volumes/shared/wiki; /usr/bin/git add -A; /usr/bin/git commit -m 'update')<CR>",
 	{ desc = "git commit" }
 )
-map("n", "<leader>wgd", ":!(cd /Users/robinyonge/vimwiki; /usr/bin/git pull)<CR>", { desc = "git download" })
-map("n", "<leader>wgu", ":!(cd /Users/robinyonge/vimwiki; /usr/bin/git push)<CR>", { desc = "git upload" })
-
--- switch to journal filetype and back to wiki
-map("n", "<leader>fj", ":set filetype=journal<CR>", { desc = "filetype=journal" })
-map("n", "<leader>fw", ":set filetype=vimwiki<CR>", { desc = "filetype=wiki" })
+map("n", "<leader>wgd", ":!(cd /Volumes/shared/wiki; /usr/bin/git pull)<CR>", { desc = "git download" })
+map("n", "<leader>wgu", ":!(cd /Volumes/shared/wiki; /usr/bin/git push)<CR>", { desc = "git upload" })
 
 map("n", "<leader>gcp", ":Copilot panel<CR>", { desc = "panel" })
 map("n", "<leader>gcs", ":Copilot status<CR>", { desc = "status" })
@@ -124,8 +116,15 @@ map("n", "<leader>gcd", ":Copilot disable<CR>", { desc = "disable" })
 map("n", "<leader>gcs", ":Copilot auth<CR>", { desc = "auth" })
 map("n", "<leader>gcv", ":Copilot version<CR>", { desc = "version" })
 map("n", "<leader>gcl", ":Copilot logs<CR>", { desc = "logs" })
-map("i", "<tab>", "<Plug>(copilot-accept-word)")
-map("i", "<C-Tab>", "<Plug>(copilot-accept-line)", { desc = "accept line" })
+map("i", "<c-tab>", "<Plug>(copilot-accept-word)", { desc = "accept word" })
+map("i", "<c-s-tab>", "<Plug>(copilot-accept-line)", { desc = "accept line" })
 
 -- terminal binds
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "exit terminal" })
+
+-- date helpers
+map("n", "<leader>hdd", ":pu=strftime('%Y-%m-%d')<CR>", { desc = "YYYY-MM-DD" })
+map("n", "<leader>hdh", ":pu=strftime('%a %d %b')<CR>", { desc = "Day DD Month" })
+map("n", "<leader>hdf", ":pu=strftime('%a %d %b %Y')<CR>", { desc = "Day DD Month YYYY" })
+map("n", "<leader>hdg", ":pu=strftime('%d %b %y')<CR>", { desc = "DD Month YY" })
+map("n", "<leader>hds", ":pu=strftime('%d/%m')<CR>", { desc = "DD Month YY" })
