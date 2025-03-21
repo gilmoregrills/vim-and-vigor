@@ -69,7 +69,7 @@ map("n", "<Leader>a", ":wqa<CR>", { desc = "wqa" })
 map("n", "<Leader>x", ":wq<CR>", { desc = "wq" })
 
 -- Oil
-map("n", "<leader>fn", ":Oil --float<CR>", { desc = "oil toggle" })
+map("n", "<leader>fn", ":Oil --float .<CR>", { desc = "oil toggle" })
 
 -- Terminal
 map("n", "<leader>tt", require("FTerm").toggle, { desc = "toggle" })

@@ -235,8 +235,8 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # custom prompt stuff
 autoload -Uz vcs_info
 autoload -U colors && colors
-SUCCESS_EMOJIS=("🙆‍♀️" "💁‍♀️" "🙋‍♀️")
-FAILURE_EMOJIS=("🙅‍♀️" "🤦‍♀️" "🤷‍♀️")
+SUCCESS_EMOJIS=("🎉" "💞" "💖" "✨")
+FAILURE_EMOJIS=("☠️" "👹" "💔" "💥")
 
 setopt prompt_subst
 setopt PROMPT_SUBST

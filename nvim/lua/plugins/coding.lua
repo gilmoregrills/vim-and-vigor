@@ -226,6 +226,7 @@ return {
 								exe = "terraform",
 								args = {
 									"fmt",
+									"-no-color",
 									"-",
 								},
 								stdin = true,

@@ -44,16 +44,68 @@ return {
 		},
 	},
 	-- lualine, like the old airline but faster
+	-- {
+	-- 	"nvim-tree/nvim-web-devicons",
+	-- },
 	{
 		"nvim-lualine/lualine.nvim",
 		opts = {
-			theme = auto,
-			icons_enabled = false,
-			extensions = {
-				"trouble",
-				"neo-tree",
-				"lazy",
+			options = {
+				extensions = {
+					"trouble",
+					"neo-tree",
+					"lazy",
+				},
+				section_separators = { left = "", right = "" },
+				component_separators = "",
+				always_divide_middle = false,
 			},
+			-- theme = auto,
+			-- icons_enabled = false,
+			-- component_separators = { left = "", right = "" },
+			-- section_separators = { left = "", right = "" },
+			sections = {
+				lualine_a = { { "mode", separator = { left = "", right = "" }, right_padding = 2 } },
+				lualine_b = {
+					{ "branch", left_padding = 2 },
+					"diff",
+					{ "diagnostics", icons_enabled = false },
+				},
+				lualine_c = {
+					{ "filename", path = 3 },
+				},
+				lualine_x = {
+					"%=",
+				},
+				lualine_y = {
+					{
+						"lsp_status",
+						icon = "†", -- f013
+						symbols = {
+							-- Standard unicode symbols to cycle through for LSP progress:
+							spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+							-- Standard unicode symbol for when LSP is done:
+							done = "✓",
+							-- Delimiter inserted between LSP names:
+							separator = "",
+						},
+					},
+					"filetype",
+				},
+				lualine_z = {
+					{ "location" },
+					{ "progress", separator = { right = "" } },
+				},
+			},
+			-- inactive_sections = {
+			-- 	lualine_a = {},
+			-- 	lualine_b = {},
+			-- 	lualine_c = { "filename" },
+			-- 	lualine_x = {},
+			-- 	lualine_y = {},
+			-- 	lualine_z = {},
+			-- },
+			-- dependencies = { "nvim-tree/nvim-web-devicons" },
 		},
 	},
 	-- nui, extra ui components
@@ -184,6 +236,7 @@ return {
 				max_width = 0.7,
 				max_height = 0.8,
 			},
+			columns = {},
 		},
 		-- Optional dependencies
 		-- dependencies = { { "echasnovski/mini.icons", opts = {} } },
