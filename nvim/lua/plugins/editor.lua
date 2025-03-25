@@ -250,4 +250,12 @@ return {
 			border = "rounded",
 		},
 	},
+	{
+		"alvarosevilla95/luatab.nvim",
+		opts = {
+			devicon = function()
+				return ""
+			end,
+		},
+	},
 }
