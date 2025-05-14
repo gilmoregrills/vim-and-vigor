@@ -43,10 +43,7 @@ return {
 			},
 		},
 	},
-	-- lualine, like the old airline but faster
-	-- {
-	-- 	"nvim-tree/nvim-web-devicons",
-	-- },
+	{ "AndreM222/copilot-lualine" },
 	{
 		"nvim-lualine/lualine.nvim",
 		opts = {
@@ -60,52 +57,101 @@ return {
 				component_separators = "",
 				always_divide_middle = false,
 			},
-			-- theme = auto,
+			theme = auto,
 			-- icons_enabled = false,
 			-- component_separators = { left = "", right = "" },
 			-- section_separators = { left = "", right = "" },
 			sections = {
 				lualine_a = { { "mode", separator = { left = "", right = "" }, right_padding = 2 } },
 				lualine_b = {
-					{ "branch", left_padding = 2 },
-					"diff",
-					{ "diagnostics", icons_enabled = false },
+					{
+						"branch",
+						left_padding = 2,
+						color = { bg = "#eceafa", fg = "#a29acb" },
+						separator = { right = "" },
+					},
+					{
+						"diff",
+						color = { bg = "#eceafa", fg = "#a29acb" },
+						separator = { right = "" },
+					},
+					{
+						"diagnostics",
+						icons_enabled = false,
+						color = { bg = "#eceafa", fg = "#a29acb" },
+						separator = { right = "" },
+						right_padding = 2,
+					},
 				},
 				lualine_c = {
-					{ "filename", path = 3 },
+					{ "filename", path = 3, left_padding = 2, color = { fg = "#cfc9f4" } },
 				},
 				lualine_x = {
-					"%=",
+					{},
 				},
 				lualine_y = {
 					{
-						"lsp_status",
-						icon = "†", -- f013
+						"copilot",
+
 						symbols = {
-							-- Standard unicode symbols to cycle through for LSP progress:
-							spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
-							-- Standard unicode symbol for when LSP is done:
-							done = "✓",
-							-- Delimiter inserted between LSP names:
-							separator = "",
+							-- spinners = {
+							-- 	"😿",
+							-- 	"😹",
+							-- },
+							spinners = "dots",
+							status = {
+								icons = {
+									enabled = "✓",
+									sleep = "⏾",
+									disabled = "⨯",
+									warning = "⚠",
+									unknown = "﹖",
+								},
+							},
+							-- status = {
+							-- 	icons = {
+							-- 		enabled = "😸",
+							-- 		sleep = "😺",
+							-- 		disabled = "😾",
+							-- 		warning = "🙀",
+							-- 		unknown = "😿",
+							-- 	},
+							-- },
 						},
+						color = { bg = "#eceafa", fg = "#a29acb" },
 					},
-					"filetype",
+					-- {
+					-- 	"lsp_status",
+					-- 	symbols = {
+					-- 		-- Standard unicode symbols to cycle through for LSP progress:
+					-- 		spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+					-- 		-- Standard unicode symbol for when LSP is done:
+					-- 		done = "✓",
+					-- 		-- Delimiter inserted between LSP names:
+					-- 		separator = "|",
+					-- 	},
+					-- 	icon = "",
+					-- 	color = { bg = "#eceafa", fg = "#a29acb" },
+					-- },
+					{ "filetype", color = { bg = "#eceafa", fg = "#a29acb" } },
 				},
 				lualine_z = {
 					{ "location" },
-					{ "progress", separator = { right = "" } },
+					{
+						"progress",
+						right_padding = 2,
+						separator = { right = "" },
+					},
 				},
 			},
 			-- inactive_sections = {
 			-- 	lualine_a = {},
-			-- 	lualine_b = {},
-			-- 	lualine_c = { "filename" },
+			-- 	lualine_b = { branch, diff, diagnostics },
+			-- 	lualine_c = {},
 			-- 	lualine_x = {},
 			-- 	lualine_y = {},
 			-- 	lualine_z = {},
 			-- },
-			-- dependencies = { "nvim-tree/nvim-web-devicons" },
 		},
 	},
 	-- nui, extra ui components
@@ -256,6 +302,27 @@ return {
 			devicon = function()
 				return ""
 			end,
+		},
+	},
+	{
+		"yetone/avante.nvim",
+		event = "VeryLazy",
+		version = false, -- Never set this value to "*"! Never!
+		opts = {
+			-- add any opts here
+			-- for example
+			provider = "copilot",
+			auto_suggestions_provider = "copilot",
+		},
+		build = "make",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"stevearc/dressing.nvim",
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			--- The below dependencies are optional,
+			"nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+			"zbirenbaum/copilot.lua", -- for providers='copilot'
 		},
 	},
 }

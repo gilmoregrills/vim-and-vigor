@@ -28,6 +28,7 @@ wk.add({
 	{ "<leader>l", group = "lists" },
 	{ "<leader>h", group = "helpers" },
 	{ "<leader>hd", group = "insert dates" },
+	{ "<leader>a", group = "avante" },
 })
 
 -- Move to window using the <ctrl> hjkl keys
@@ -65,7 +66,6 @@ map("n", "<leader>fh", builtin.help_tags, { desc = "telescope help_tags" })
 -- map for quick quit, save files using leader key
 ---- Normal mode
 -- map("n", "<Leader>s", ":write<CR>", { desc = "write" })
-map("n", "<Leader>a", ":wqa<CR>", { desc = "wqa" })
 map("n", "<Leader>x", ":wq<CR>", { desc = "wq" })
 
 -- Oil

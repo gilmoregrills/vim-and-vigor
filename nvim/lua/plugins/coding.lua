@@ -1,14 +1,6 @@
 return {
 	"folke/neodev.nvim",
 	{ "folke/neoconf.nvim", cmd = "Neoconf" },
-	-- pairs of quotes and brackets and stuff
-	{
-		"echasnovski/mini.pairs",
-		-- event = "VeryLazy",
-		config = function(_, opts)
-			require("mini.pairs").setup({})
-		end,
-	},
 	-- commenter, use gcc to comment a line, or select and hit gc
 	{
 		"echasnovski/mini.comment",
@@ -342,22 +334,22 @@ return {
 		"zbirenbaum/copilot.lua",
 		cmd = "Copilot",
 		build = ":Copilot auth",
-		event = "BufReadPost",
+		event = "InsertEnter",
 		opts = {
 			suggestion = {
 				enabled = not vim.g.ai_cmp,
 				auto_trigger = true,
 				hide_during_completion = vim.g.ai_cmp,
 				keymap = {
-					accept_word = "<Tab>",
-					next = "<M-]>",
-					prev = "<M-[>",
+					accept_word = "<C-l>",
+					next = "<C-k>",
+					prev = "<C-j>",
 				},
 			},
-			panel = { enabled = true },
 			filetypes = {
 				gitcommit = true,
 				gitrebase = true,
+				python = true,
 			},
 		},
 	},
