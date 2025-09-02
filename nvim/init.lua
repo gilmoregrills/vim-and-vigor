@@ -1,7 +1,5 @@
 vim.g.mapleader = " "
-
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim" if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
 		"clone",
@@ -52,7 +50,7 @@ require("lint").linters_by_ft = {
 	python = { "pylint" },
 	go = { "golangcilint" },
 	yaml = { "yamllint" },
-	json = { "jsonlint" },
+	json = { "eslint" },
 	typescript = { "eslint" },
 	typescriptreact = { "eslint" },
 	javascript = { "eslint" },

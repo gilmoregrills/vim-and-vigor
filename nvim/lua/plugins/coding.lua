@@ -200,18 +200,23 @@ return {
 						end,
 					},
 					sh = {
-						require("formatter.filetypes.sh").beautysh,
+						require("formatter.filetypes.sh").shfmt,
+					},
+					terraform = {
+						require("formatter.filetypes.terraform").terraformfmt,
 						function()
 							return {
-								exe = "beautysh",
+								exe = "terraform",
 								args = {
-									"--indent-size=2",
+									"fmt",
+									"-no-color",
+									"-",
 								},
 								stdin = true,
 							}
 						end,
 					},
-					terraform = {
+					hcl = {
 						require("formatter.filetypes.terraform").terraformfmt,
 						function()
 							return {
@@ -234,17 +239,7 @@ return {
 						require("formatter.filetypes.python").isort,
 					},
 					yaml = {
-						require("formatter.filetypes.yaml"),
-						function()
-							return {
-								exe = "yq",
-								args = {
-									".",
-									"--prettyPrint",
-								},
-								stdin = true,
-							}
-						end,
+						require("formatter.filetypes.yaml").prettier,
 					},
 					json = {
 						require("formatter.filetypes.json"),

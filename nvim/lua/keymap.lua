@@ -11,7 +11,10 @@ wk.add({
 	{ "<leader>f", group = "find/file" },
 	{ "<leader>s", group = "surround" },
 	{ "<leader>w", group = "wiki" },
-	{ "<leader>t", group = "terminal" },
+	{ "<leader>t", group = "(floating) terminal(s)" },
+	{ "<leader>tf", group = "terraform" },
+	{ "<leader>tk", group = "k8s" },
+	{ "<leader>tb", group = "bottom" },
 	{ "<leader>w<leader>", group = "diary" },
 	{ "<leader>d", group = "diagnostics" },
 	{ "<leader><tab>9", desc = "<leader><tab>9", hidden = true },
@@ -48,8 +51,10 @@ map("n", "<leader><tab>f", "<cmd>tabfirst<cr>", { desc = "first tab" })
 map("n", "<leader><tab><tab>", "<cmd>tabnext<cr>", { desc = "next tab" })
 map("n", "<leader><tab>n", "<cmd>tabnew<cr>", { desc = "new tab" })
 map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "next tab" })
+map("n", "<PageUp>", "<cmd>tabnext<cr>", { desc = "next tab" })
 map("n", "<leader><tab>x", "<cmd>tabclose<cr>", { desc = "close tab" })
 map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "previous tab" })
+map("n", "<PageDown>", "<cmd>tabprevious<cr>", { desc = "previous tab" })
 
 -- Resize window using <ctrl> arrow keys
 map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "increase window height" })
@@ -73,9 +78,74 @@ map("n", "<leader>fn", ":Oil --float .<CR>", { desc = "oil toggle" })
 
 -- Terminal
 map("n", "<leader>tt", require("FTerm").toggle, { desc = "toggle" })
+map("n", "<F3>", require("FTerm").toggle, { desc = "toggle" })
+map("t", "<F3>", require("FTerm").toggle, { desc = "toggle" })
+map("n", "<C-F3>", require("FTerm").exit, { desc = "toggle" })
+map("t", "<C-F3>", require("FTerm").exit, { desc = "toggle" })
 map("n", "<leader>tx", require("FTerm").exit, { desc = "exit" })
 map("n", "<leader>to", require("FTerm").open, { desc = "open" })
 map("n", "<leader>tc", require("FTerm").close, { desc = "close" })
+map("n", "<leader>tv", ":vertical terminal<CR>", { desc = "vert" })
+map("n", "<leader>tbr", ":botright terminal<CR>", { desc = "botright" })
+map("n", "<leader>tbl", ":botleft terminal<CR>", { desc = "botleft" })
+map("n", "<leader>tbb", ":bot terminal<CR>", { desc = "bottom" })
+
+local fterm = require("FTerm")
+
+-- Use this to toggle claude in a floating terminal
+local claudeterm = fterm:new({
+	ft = "fterm_gitui", -- You can also override the default filetype, if you want
+	cmd = "claude",
+	border = "rounded",
+})
+map("n", "<leader>tc", function()
+	claudeterm:toggle()
+end, { desc = "claude ✨" })
+
+map("n", "<leader>tfi", function()
+	fterm.scratch({
+		cmd = { "terraform", "init" },
+		border = "rounded",
+	})
+end, { desc = "init" })
+
+map("n", "<leader>tft", function()
+	fterm.scratch({
+		cmd = { "terraform", "test" },
+		border = "rounded",
+	})
+end, { desc = "test" })
+
+map("n", "<leader>tfp", function()
+	fterm.scratch({
+		cmd = { "terraform", "plan" },
+		border = "rounded",
+	})
+end, { desc = "plan" })
+
+map("n", "<leader>ti", function()
+	vim.ui.input({ prompt = "Enter command: " }, function(input)
+		if input then
+			fterm.scratch({
+				cmd = vim.split(input, "%s+"),
+				border = "rounded",
+				auto_close = true,
+			})
+		end
+	end)
+end, { desc = "run cmd" })
+
+map("n", "<leader>tk9", function()
+	vim.ui.input({ prompt = "Enter cluster name: " }, function(input)
+		if input then
+			fterm.scratch({
+				cmd = vim.split(string.format("kube_cloudflare.sh -i %s k9s", input), "%s+"),
+				border = "rounded",
+				auto_close = true,
+			})
+		end
+	end)
+end, { desc = "start k9s 🐶" })
 
 -- Trouble
 map("n", "<leader>dt", ":Trouble diagnostics toggle<CR>", { desc = "diagnostics toggle" })
@@ -113,7 +183,8 @@ map("n", "<leader>gcp", ":Copilot panel<CR>", { desc = "panel" })
 map("n", "<leader>gcs", ":Copilot status<CR>", { desc = "status" })
 map("n", "<leader>gce", ":Copilot enable<CR>", { desc = "enable" })
 map("n", "<leader>gcd", ":Copilot disable<CR>", { desc = "disable" })
-map("n", "<leader>gcs", ":Copilot auth<CR>", { desc = "auth" })
+map("n", "<leader>gca", ":Copilot auth<CR>", { desc = "auth" })
+map("n", "<leader>gcs", ":Copilot status<CR>", { desc = "status" })
 map("n", "<leader>gcv", ":Copilot version<CR>", { desc = "version" })
 map("n", "<leader>gcl", ":Copilot logs<CR>", { desc = "logs" })
 map("i", "<c-tab>", "<Plug>(copilot-accept-word)", { desc = "accept word" })
