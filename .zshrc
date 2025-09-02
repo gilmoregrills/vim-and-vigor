@@ -1,48 +1,12 @@
-source /Users/robinyonge/code/git/marlonrichert/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+# source /Users/robinyonge/code/git/marlonrichert/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
-. "$HOME/.asdf/asdf.sh"
-# append completions to fpath
-fpath=(${ASDF_DIR}/completions $fpath)
+eval "$(mise activate zsh)"
 # initialise completions with ZSH's compinit
 autoload -Uz compinit && compinit
 
 function getPublicKey() {
   ssh-keygen -y -f ${1}
 }
-
-function pglogin(){
-  case $1 in
-    dev)
-      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
-      ;;
-    integ)
-      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
-      ;;
-    eu)
-      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
-      ;;
-    us)
-      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
-      ;;
-    jp)
-      export PGUSER=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields username)
-      export PGPASSWORD=$(op item get --vault INFRA "Databases: readonly - postgres (all environments)" --fields password)
-      ;;
-  esac
-
-  export PGDATABASE="${2}"
-  export PGHOST="postgres.${1}.tractable.io"
-  pgcli
-}
-
-function gAddKey() {
-  eval "$(ssh-agent)"
-  ssh-add ~/.ssh/id_rsa_github ~/.ssh/id_rsa_tractable
-};
 
 function iterm2_set_user_vars() {
   iterm2_set_user_var aws_profile "$AWS_DEFAULT_PROFILE"
@@ -100,13 +64,12 @@ function jbranch() {
   echo "Select Jira ticket:"
   SAVEIFS=${IFS}
   IFS=$'\n'
-  VARS=(`jira mine`)
+  VARS=($(jira mine))
   IFS=${SAVEIFS}
   CHOICE=$(gum choose "${VARS[@]}")
-  echo ${CHOICE}
+  PREFIX=$(gum choose --header="Select prefix:" "feature" "fix" "chore" "docs" "test" "refactor" "style")
   TICKETID=$(echo ${CHOICE} | awk -F ':' '{print $1}')
-  jira progress ${TICKETID}
-  git checkout -b ${TICKETID}
+  git checkout -b "${PREFIX}/${TICKETID}"
   git push --set-upstream origin ${TICKETID}
   return ${TICKETID}
 }
@@ -133,8 +96,52 @@ function jpr() {
   gh pr create
 }
 
-function gSuiteSA() {
-  export GOOGLE_CLOUD_KEYFILE_JSON=$(aws --profile=tractableai-shared --region=eu-west-2 ssm get-parameter --name /prod/infrastructure/tf-env-gsuite/gsuite/service-account --with-decryption | jq -jr '.Parameter.Value')
+function gchb() {
+  SAVEIFS=${IFS}
+  IFS=$'\n'
+  VARS=($(git branch --format='%(refname:short)'))
+  IFS=${SAVEIFS}
+  BRANCH=$(gum choose --header="Select a branch:" "${VARS[@]}")
+  if [ -z "${BRANCH}" ]; then
+    echo "No branch selected"
+    return 1
+  fi
+  echo "Checking out branch: ${BRANCH}"
+  git checkout "${BRANCH}"
+}
+
+function kubectx() {
+  SAVEIFS=${IFS}
+  IFS=$'\n'
+  VARS=($(kubectl config get-contexts --output=name | awk '{print $1}' | grep -v '*'))
+  IFS=${SAVEIFS}
+  CHOICE=$(gum choose --header="Select context:" "${VARS[@]}")
+  kubectl config use-context ${CHOICE}
+  export KUBE_CONTEXT=${CHOICE}
+  export KUBE_NAMESPACE=$(kubectl config view --minify --output 'jsonpath={..namespace}')
+}
+
+function kubens() {
+  echo "Select namespace:"
+  SAVEIFS=${IFS}
+  IFS=$'\n'
+  VARS=($(kubectl get namespaces --no-headers -o custom-columns=:metadata.name))
+  IFS=${SAVEIFS}
+  CHOICE=$(gum choose "${VARS[@]}")
+  kubectl config set-context --current --namespace=${CHOICE}
+  export KUBE_CONTEXT=$(kubectl config current-context)
+  export KUBE_NAMESPACE=${CHOICE}
+}
+
+function kube_set() {
+  export KUBE_CONTEXT=$(kubectl config current-context)
+  export KUBE_NAMESPACE=$(kubectl config view --minify --output 'jsonpath={..namespace}')
+}
+
+function kube_unset() {
+  unset KUBE_CONTEXT
+  unset KUBE_NAMESPACE
+  kubectl config unset current-context
 }
 
 #
@@ -179,26 +186,22 @@ function gresetm() {
   git reset --hard origin/${PRIMARY_BRANCH}
 }
 
-function tclone() {
-  git clone git@github.com:tractableai/${1}.git
+function bclone() {
+  git clone git@github.com:BeameryHQ/${1}.git
 };
 
 # Terraform
 alias tf="terraform"
+alias terraform-test="terraform"
 alias tf-fmt="terraform fmt -recursive ."
-alias tfplan="terraform plan -no-color"
-alias tfapply="terraform apply -no-color -auto-approve"
 
 # Kubernetes
 alias kuebctl="kubectl"
-alias unset_kubecontext="kubectl config unset current-context"
 export MINIKUBE_IN_STYLE=1
 export KUBE_EDITOR=nvim
 
 # Docker
 alias d="docker"
-alias dockerKillZombies="docker ps | grep hours | awk '{print $1}' | xargs docker kill"
-alias dockerHardReset="docker ps -q | xargs -L1 docker stop && test -z \"$(docker ps -q 2>/dev/null)\" && osascript -e 'quit app \"Docker\"' && open --background -a Docker"
 
 # Easier navigation: .., ..., ...., ....., ~ and -
 alias ls="eza --across"
@@ -217,25 +220,18 @@ alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall F
 alias 1pass='eval $(op signin tractable)'
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias myip='curl http://whatismyip.akamai.com/'
-alias orca='/Users/robinyonge/code/git/hundredrabbits/Orca-c/build/orca'
-
-# load commonly-used secrets as envvars
-source /Users/robinyonge/.bash_secrets
-
-eval "$(thefuck --alias)"
-alias oops='fuck'
 
 # PATH garbage
 export GOPATH=$HOME/go
 export GOBIN="/Users/robinyonge/go/bin"
-export PATH="$PATH:$HOME/.poetry/bin:/usr/local/sbin:$HOME/.cargo/bin:/Users/robinyonge/code/git/tractable/cli-tools/bin:/Users/robinyonge/.kafka/current/bin:${KREW_ROOT:-$HOME/.krew}/bin:$GOBIN:/usr/local/opt/findutils/libexec/gnubin:/Users/robinyonge/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin"
+export PATH="$PATH:$HOME/.poetry/bin:/usr/local/sbin:$HOME/.cargo/bin:/Users/robinyonge/code/git/tractable/cli-tools/bin:/Users/robinyonge/.kafka/current/bin:${KREW_ROOT:-$HOME/.krew}/bin:$GOBIN:/usr/local/opt/findutils/libexec/gnubin:/Users/robinyonge/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin:/Users/robin.lightfoot/.local/bin"
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # custom prompt stuff
 autoload -Uz vcs_info
 autoload -U colors && colors
-SUCCESS_EMOJIS=("🎉" "💞" "💖" "✨")
+SUCCESS_EMOJIS=("💞" "💖" "✨")
 FAILURE_EMOJIS=("☠️" "👹" "💔" "💥")
 
 setopt prompt_subst
@@ -270,11 +266,32 @@ function myprompt() {
     return
   fi
 
-  local 'TF_VERSION_PROMPT'
-  if [ -e .terraform-version ]; then
-    TF_VERSION_PROMPT="using %F{magenta}tf$(tfenv version-name)%f "
+  local 'USING_PROMPT'
+
+  PWD=$(pwd)
+
+  # local 'TF_VERSION_PROMPT'
+  if [[ $(mise tool terraform --config-source --json | jq -r .path | xargs dirname) == ${PWD} ]]; then
+    if [[ -z $USING_PROMPT ]]; then
+      USING_PROMPT="%F{magenta}tf$(mise tool terraform --active)%f "
+    else
+      USING_PROMPT="${USING_PROMPT} and %F{magenta}tf$(mise tool terraform --active)%f "
+    fi
+  fi
+
+  # local NODE_VERSION=$(mise tool node --json)
+  if [[ $(mise tool node --config-source --json | jq -r .path | xargs dirname) == ${PWD} ]]; then
+    if [[ -z $USING_PROMPT ]]; then
+      USING_PROMPT="%F{magenta}node$(mise tool node --active)%f "
+    else
+      USING_PROMPT="${USING_PROMPT}and %F{magenta}node$(mise tool node --active)%f "
+    fi
+  fi
+
+  if [[ -z $USING_PROMPT ]]; then
+    USING_PROMPT=""
   else
-    TF_VERSION_PROMPT=""
+    USING_PROMPT="using ${USING_PROMPT}"
   fi
 
   local 'AWS_PROMPT'
@@ -284,13 +301,13 @@ function myprompt() {
     AWS_PROMPT="on %F{yellow}$AWS_PROFILE%f "
   fi
 
-  if kubectl config current-context &> /dev/null ; then
-    KUBE_CONTEXT_PROMPT="on %F{cyan}$(kubectl config current-context)($(kubens -c))%f "
-  else
+  if [[ -z "$KUBE_CONTEXT" ]] ; then
     KUBE_CONTEXT_PROMPT=""
+  else
+    KUBE_CONTEXT_PROMPT="on %F{white}${KUBE_CONTEXT}(${KUBE_NAMESPACE})%f "
   fi
 
-  PS1=%F{blue}%~%f%F{green}${vcs_info_msg_0_}%f' '"$AWS_PROMPT""$TF_VERSION_PROMPT""$KUBE_CONTEXT_PROMPT""$PROMPTMOJI"$'\n'%F{$STATUS_COLOR}'↳ '%f
+  PS1=%F{blue}%~%f%F{green}${vcs_info_msg_0_}%f' '"$AWS_PROMPT""$KUBE_CONTEXT_PROMPT""$USING_PROMPT""$TF_VERSION_PROMPT""$NODE_VERSION_PROMPT""$PROMPTMOJI"$'\n'%F{$STATUS_COLOR}'↳ '%f
   # PS0=$'\nps0'
   # PS2="ps2 > "
   return
@@ -299,20 +316,35 @@ function myprompt() {
 alias fastprompt="export FASTPROMPT=true"
 alias slowprompt="unset FASTPROMPT"
 
+export K9S_CONFIG_DIR="/Users/robin.lightfoot/.config/k9s"
+
 # syntax highlighting
-source /Users/robinyonge/code/git/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# source /Users/robinyonge/code/git/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# substring history
-source /opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh
-bindkey "^[[A" history-beginning-search-backward
-bindkey "^[[B" history-beginning-search-forward
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/robinyonge/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+# https://vitormv.github.io/fzf-themes#eyJib3JkZXJTdHlsZSI6InJvdW5kZWQiLCJib3JkZXJMYWJlbCI6IiIsImJvcmRlckxhYmVsUG9zaXRpb24iOjAsInByZXZpZXdCb3JkZXJTdHlsZSI6InJvdW5kZWQiLCJwYWRkaW5nIjoiMCIsIm1hcmdpbiI6IjAiLCJwcm9tcHQiOiI+ICIsIm1hcmtlciI6Ij4iLCJwb2ludGVyIjoi4peGIiwic2VwYXJhdG9yIjoiIiwic2Nyb2xsYmFyIjoiIiwibGF5b3V0IjoiZGVmYXVsdCIsImluZm8iOiJyaWdodCIsImNvbG9ycyI6ImZnOiNjOGIzYjMsZmcrOiM0MTQxNDEsYmc6I2ZiZjhmOCxiZys6I2ZiZjhmOCxobDojYzhiM2IzLGhsKzojNDE0MTQxLGluZm86I2FmYWY4NyxtYXJrZXI6I2Y2ZTNlNyxwcm9tcHQ6I2Y2ZTNlNyxzcGlubmVyOiNlZWFhYmUscG9pbnRlcjojZWVhYWJlLGhlYWRlcjojODJiNGUzLGJvcmRlcjojY2ZjOWY0LGxhYmVsOiNhZWFlYWUscXVlcnk6Izk0ODQ4NCJ9
+export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
+  --color=fg:#c8b3b3,fg+:#414141,bg:#fbf8f8,bg+:#fbf8f8
+  --color=hl:#c8b3b3,hl+:#414141,info:#afaf87,marker:#f6e3e7
+  --color=prompt:#f6e3e7,spinner:#eeaabe,pointer:#eeaabe,header:#82b4e3
+  --color=border:#cfc9f4,label:#aeaeae,query:#948484
+  --border="rounded" --border-label="" --preview-window="border-rounded" --prompt="> "
+  --marker=">" --pointer="◆" --separator="" --scrollbar=""
+  --info="right"'
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
 
 eval "$(atuin init zsh)"
+
+source ~/.zsh_secrets
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/robin.lightfoot/bin/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/robin.lightfoot/bin/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/robin.lightfoot/bin/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/robin.lightfoot/bin/google-cloud-sdk/completion.zsh.inc'; fi
+# Beamery Platform Tooling setup
+[ -s ~/.beamery-tooling/bin/tooling-setup.sh ] && source ~/.beamery-tooling/bin/tooling-setup.sh
+# hook direnv in zshrc
+eval "$(direnv hook zsh)"
