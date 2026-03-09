@@ -10,7 +10,7 @@ wk.add({
 	{ "<leader>g", group = "git(hub)" },
 	{ "<leader>f", group = "find/file" },
 	{ "<leader>s", group = "surround" },
-	{ "<leader>w", group = "wiki" },
+	{ "<leader>w", group = "windows" },
 	{ "<leader>t", group = "(floating) terminal(s)" },
 	{ "<leader>tf", group = "terraform" },
 	{ "<leader>tk", group = "k8s" },
@@ -45,6 +45,26 @@ for i = 1, 9, 1 do
 	map("n", "<leader><tab>" .. i, i .. "gt", { desc = "select tab 1(-9 etc)" })
 end
 
+-- window splits
+map("n", "<leader>wh", "<C-w>h", { desc = "go to left window", remap = true })
+map("n", "<leader>wH", "<C-w>H", { desc = "move window left", remap = true })
+map("n", "<leader>wj", "<C-w>j", { desc = "go to lower window", remap = true })
+map("n", "<leader>wJ", "<C-w>J", { desc = "move window down", remap = true })
+map("n", "<leader>wk", "<C-w>k", { desc = "go to upper window", remap = true })
+map("n", "<leader>wK", "<C-w>K", { desc = "move window up", remap = true })
+map("n", "<leader>wl", "<C-w>l", { desc = "go to right window", remap = true })
+map("n", "<leader>wL", "<C-w>L", { desc = "move window right", remap = true })
+map("n", "<leader>wq", "<C-w>q", { desc = "quit window", remap = true })
+map("n", "<leader>wo", "<C-w>o", { desc = "close all other windows", remap = true })
+map("n", "<leader>w+", "<C-w>+", { desc = "increase height", remap = true })
+map("n", "<leader>w-", "<C-w>-", { desc = "decrease height", remap = true })
+map("n", "<leader>w<", "<C-w><", { desc = "decrease width", remap = true })
+map("n", "<leader>w>", "<C-w>>", { desc = "increase width", remap = true })
+map("n", "<leader>w=", "<C-w>=", { desc = "equalize splits", remap = true })
+map("n", "<leader>wT", "<C-w>T", { desc = "break out into a new tab", remap = true })
+map("n", "<leader>ws", "<C-w>s", { desc = "hsplit window", remap = true })
+map("n", "<leader>wv", "<C-w>v", { desc = "vsplit window", remap = true })
+
 -- tabs
 map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "last tab" })
 map("n", "<leader><tab>f", "<cmd>tabfirst<cr>", { desc = "first tab" })
@@ -67,6 +87,7 @@ map("n", "<leader>ff", builtin.find_files, { desc = "telescope find_files" })
 map("n", "<leader>fg", builtin.live_grep, { desc = "telescope live_grep" })
 map("n", "<leader>fb", builtin.buffers, { desc = "telescope buffers" })
 map("n", "<leader>fh", builtin.help_tags, { desc = "telescope help_tags" })
+map("n", "<leader>ft", builtin.filetypes, { desc = "telescope filetypes" })
 
 -- map for quick quit, save files using leader key
 ---- Normal mode
@@ -153,32 +174,7 @@ map("n", "<leader>do", ":Trouble diagnostics open<CR>", { desc = "diagnostics op
 map("n", "<leader>dc", ":Trouble diagnostics close<CR>", { desc = "diagnostics close" })
 map("n", "<leader>dr", ":Trouble diagnostics refresh<CR>", { desc = "diagnostics refresh" })
 
--- vimwiki window management
-map("n", "<leader>wo", ":botright 80vnew /Volumes/shared/wiki/index.md<CR>", { desc = "open index in new window" })
-
-map(
-	"n",
-	"<leader>ws",
-	":botright 80vnew /Volumes/shared/wiki/_private/scratchpad.md<CR>",
-	{ desc = "open scratchpad in new window" }
-)
-
--- vimwiki git sync
-map(
-	"n",
-	"<leader>wgs",
-	":!(cd /Volumes/shared/wiki; /usr/bin/git add -A; /usr/bin/git commit -m 'update'; /usr/bin/git pull; /usr/bin/git push)<CR>",
-	{ desc = "git sync" }
-)
-map(
-	"n",
-	"<leader>wgc",
-	":!(cd /Volumes/shared/wiki; /usr/bin/git add -A; /usr/bin/git commit -m 'update')<CR>",
-	{ desc = "git commit" }
-)
-map("n", "<leader>wgd", ":!(cd /Volumes/shared/wiki; /usr/bin/git pull)<CR>", { desc = "git download" })
-map("n", "<leader>wgu", ":!(cd /Volumes/shared/wiki; /usr/bin/git push)<CR>", { desc = "git upload" })
-
+-- copilot
 map("n", "<leader>gcp", ":Copilot panel<CR>", { desc = "panel" })
 map("n", "<leader>gcs", ":Copilot status<CR>", { desc = "status" })
 map("n", "<leader>gce", ":Copilot enable<CR>", { desc = "enable" })

@@ -47,6 +47,10 @@ return {
 				replace = "<Leader>sr", -- Replace surrounding
 				update_n_lines = "<Leader>sn", -- Update `n_lines`
 			},
+			custom_surroundings = {
+				["("] = { output = { left = "(", right = ")" } },
+				[")"] = { output = { left = "( ", right = " )" } },
+			},
 		},
 	},
 	-- treesitter-textobjects
@@ -154,11 +158,14 @@ return {
 			end
 		end,
 	},
-	-- lspconfig
 	{
 		"neovim/nvim-lspconfig",
+		-- opts = {
+		-- 	diagnostics = {
+		-- 		virtual_text = false,
+		-- 	},
+		-- },
 	},
-	-- formatter, works with mason & treesitter(?)
 	{
 		"mhartington/formatter.nvim",
 		config = function(_, opts)
@@ -209,7 +216,19 @@ return {
 								exe = "terraform",
 								args = {
 									"fmt",
-									"-no-color",
+									"-",
+								},
+								stdin = true,
+							}
+						end,
+					},
+					tf = {
+						require("formatter.filetypes.terraform").terraformfmt,
+						function()
+							return {
+								exe = "terraform",
+								args = {
+									"fmt",
 									"-",
 								},
 								stdin = true,
@@ -253,8 +272,22 @@ return {
 							}
 						end,
 					},
+					rego = {
+						function()
+							return {
+								exe = "opa",
+								args = {
+									"fmt",
+								},
+								stdin = true,
+							}
+						end,
+					},
 					["*"] = {
 						require("formatter.filetypes.any").remove_trailing_whitespace,
+					},
+					html = {
+						require("formatter.filetypes.html").prettier,
 					},
 				},
 			})
@@ -328,13 +361,12 @@ return {
 	{
 		"zbirenbaum/copilot.lua",
 		cmd = "Copilot",
-		build = ":Copilot auth",
 		event = "InsertEnter",
 		opts = {
 			suggestion = {
-				enabled = not vim.g.ai_cmp,
+				enabled = true,
 				auto_trigger = true,
-				hide_during_completion = vim.g.ai_cmp,
+				hide_during_completion = true,
 				keymap = {
 					accept_word = "<C-l>",
 					next = "<C-k>",
@@ -345,6 +377,8 @@ return {
 				gitcommit = true,
 				gitrebase = true,
 				python = true,
+				tf = true,
+				terraform = true,
 			},
 		},
 	},

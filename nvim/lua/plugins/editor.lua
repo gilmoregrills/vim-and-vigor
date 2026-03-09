@@ -62,29 +62,31 @@ return {
 			-- component_separators = { left = "", right = "" },
 			-- section_separators = { left = "", right = "" },
 			sections = {
-				lualine_a = { { "mode", separator = { left = "", right = "" }, right_padding = 2 } },
+				lualine_a = {
+					{ "mode", separator = { left = "", right = "" }, right_padding = 2 },
+				},
 				lualine_b = {
 					{
 						"branch",
 						left_padding = 2,
-						color = { bg = "#eceafa", fg = "#a29acb" },
+						-- color = { bg = "#eceafa", fg = "#a29acb" },
 						separator = { right = "" },
 					},
 					{
 						"diff",
-						color = { bg = "#eceafa", fg = "#a29acb" },
+						-- color = { bg = "#eceafa", fg = "#a29acb" },
 						separator = { right = "" },
 					},
 					{
 						"diagnostics",
 						icons_enabled = false,
-						color = { bg = "#eceafa", fg = "#a29acb" },
+						-- color = { bg = "#eceafa", fg = "#a29acb" },
 						separator = { right = "" },
 						right_padding = 2,
 					},
 				},
 				lualine_c = {
-					{ "filename", path = 3, left_padding = 2, color = { fg = "#cfc9f4" } },
+					{ "filename", path = 3, left_padding = 3 },
 				},
 				lualine_x = {
 					{},
@@ -118,7 +120,7 @@ return {
 							-- 	},
 							-- },
 						},
-						color = { bg = "#eceafa", fg = "#a29acb" },
+						-- color = { bg = "#eceafa", fg = "#a29acb" },
 					},
 					-- {
 					-- 	"lsp_status",
@@ -133,25 +135,26 @@ return {
 					-- 	icon = "",
 					-- 	color = { bg = "#eceafa", fg = "#a29acb" },
 					-- },
-					{ "filetype", color = { bg = "#eceafa", fg = "#a29acb" } },
+					-- { "filetype", color = { bg = "#eceafa", fg = "#a29acb" } },
+					{ "filetype" },
 				},
 				lualine_z = {
 					{ "location" },
 					{
 						"progress",
 						right_padding = 2,
-						separator = { right = "" },
+						separator = { right = "" },
 					},
 				},
 			},
-			-- inactive_sections = {
-			-- 	lualine_a = {},
-			-- 	lualine_b = { branch, diff, diagnostics },
-			-- 	lualine_c = {},
-			-- 	lualine_x = {},
-			-- 	lualine_y = {},
-			-- 	lualine_z = {},
-			-- },
+			inactive_sections = {
+				-- lualine_a = {},
+				-- 	lualine_b = { branch, diff, diagnostics },
+				-- 	lualine_c = {},
+				-- 	lualine_x = {},
+				-- 	lualine_y = {},
+				-- lualine_z = {},
+			},
 		},
 	},
 	-- nui, extra ui components
@@ -264,12 +267,6 @@ return {
 		end,
 	},
 	{
-		"rktjmp/lush.nvim",
-	},
-	{
-		"rktjmp/shipwright.nvim",
-	},
-	{
 		"stevearc/oil.nvim",
 		---@module 'oil'
 		---@type oil.SetupOpts
@@ -281,6 +278,7 @@ return {
 				padding = 5,
 				max_width = 0.7,
 				max_height = 0.8,
+				border = "rounded",
 			},
 			columns = {},
 		},
@@ -309,5 +307,84 @@ return {
 		dependencies = "nvzone/volt",
 		opts = {},
 		cmd = "FloatermToggle",
+	},
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		---@module 'render-markdown'
+		---@type render.md.UserConfig
+		opts = {
+			completions = {
+				lsp = {
+					enabled = true,
+				},
+			},
+			heading = {
+				icons = { "<- h1", "<- h2", "<- h3", " <- h4", "<- h5", "<- h6" },
+				-- icons = { "", "", "", "", "", "" },
+				position = "right",
+				-- signs = { "h1", "h2", "h3", "h4", "h5", "h6" },
+				signs = { "", "", "", "", "", "" },
+				backgrounds = {},
+				foregrounds = {
+					"Debug",
+					"Debug",
+					"Debug",
+					"Debug",
+					"Debug",
+					"Debug",
+				},
+				-- border = true,
+				-- border_virtual = true,
+				-- above = "",
+				-- below = "-",
+			},
+			html = {
+				comment = {
+					conceal = true,
+					text = "...",
+				},
+			},
+			code = {
+				inline_left = "",
+				inline_right = "",
+				highlight_inline = "Number",
+				position = "right",
+			},
+			links = {
+				hyperlink = "-> ",
+			},
+		},
+	},
+	{
+		"Bishop-Fox/colorblocks.nvim",
+		config = function()
+			require("colorblocks").setup({
+				symbol = "■",
+				virt_text_pos = "eol",
+				mode = "fg",
+				section = { "", "H", "", " -> ", "S" },
+				filetypes = { "lua", "css", "typescriptreact", "javascriptreact", "html", "markdown" },
+			})
+		end,
+	},
+	{
+		"rachartier/tiny-inline-diagnostic.nvim",
+		event = "VeryLazy",
+		priority = 1000,
+		-- config = function()
+		-- 	require("tiny-inline-diagnostic").setup()
+		-- end,
+		opts = {
+			signs = {
+				left = "",
+				right = "",
+				diag = "●",
+				arrow = "← ",
+				up_arrow = "↑ ",
+				vertical = " │",
+				vertical_end = " └",
+			},
+		},
 	},
 }

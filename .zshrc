@@ -78,7 +78,7 @@ function jch() {
   echo "Select Jira ticket:"
   SAVEIFS=${IFS}
   IFS=$'\n'
-  VARS=(`jira mine`)
+  VARS=(`jls`)
   IFS=${SAVEIFS}
   CHOICE=$(gum choose "${VARS[@]}")
   echo ${CHOICE}
@@ -110,38 +110,56 @@ function gchb() {
   git checkout "${BRANCH}"
 }
 
+function kube_set() {
+  export KUBE_CONTEXT=$(kubectl config current-context)
+  export KUBE_NAMESPACE=$(kubectl config view --minify --output 'jsonpath={..namespace}')
+}
+kube_set
+
+function kube_unset() {
+  unset KUBE_CONTEXT
+  unset KUBE_NAMESPACE
+  kubectl config unset current-context
+}
+
 function kubectx() {
   SAVEIFS=${IFS}
   IFS=$'\n'
   VARS=($(kubectl config get-contexts --output=name | awk '{print $1}' | grep -v '*'))
   IFS=${SAVEIFS}
   CHOICE=$(gum choose --header="Select context:" "${VARS[@]}")
-  kubectl config use-context ${CHOICE}
-  export KUBE_CONTEXT=${CHOICE}
-  export KUBE_NAMESPACE=$(kubectl config view --minify --output 'jsonpath={..namespace}')
+  if [[ -z "$CHOICE" ]] ; then
+    echo "No context selected"
+    return 1
+  else
+    kubectl config use-context ${CHOICE}
+    if [[ -z $(kubectl config view --minify --output 'jsonpath={..namespace}') ]] ; then
+      echo "No namespace set for context, defaulting to 'default'"
+      kubectl config set-context --current --namespace=default
+    fi
+  fi
+  kube_set
 }
 
 function kubens() {
-  echo "Select namespace:"
+  if [[ -z "$KUBE_CONTEXT" ]] ; then
+    echo "No kube context set"
+    kubectx
+  fi
   SAVEIFS=${IFS}
   IFS=$'\n'
   VARS=($(kubectl get namespaces --no-headers -o custom-columns=:metadata.name))
   IFS=${SAVEIFS}
-  CHOICE=$(gum choose "${VARS[@]}")
-  kubectl config set-context --current --namespace=${CHOICE}
-  export KUBE_CONTEXT=$(kubectl config current-context)
-  export KUBE_NAMESPACE=${CHOICE}
-}
-
-function kube_set() {
-  export KUBE_CONTEXT=$(kubectl config current-context)
-  export KUBE_NAMESPACE=$(kubectl config view --minify --output 'jsonpath={..namespace}')
-}
-
-function kube_unset() {
-  unset KUBE_CONTEXT
-  unset KUBE_NAMESPACE
-  kubectl config unset current-context
+  CHOICE=$(gum choose --header="Select namespace:" "${VARS[@]}")
+  if [[ -z "$CHOICE" ]] ; then
+    echo "No namespace selected"
+    return 1
+  else
+    echo "Switching to namespace: ${CHOICE}"
+    kubectl config set-context --current --namespace=${CHOICE}
+    export KUBE_CONTEXT=$(kubectl config current-context)
+  fi
+  kube_set
 }
 
 #
@@ -160,6 +178,9 @@ alias zshrc="nvim ~/.zshrc"
 alias reload='source ~/.zshrc;echo "sourced ~/.zshrc"'
 alias :q='exit'
 alias hfcli='huggingface-cli'
+alias claude='claude --model=sonnet'
+alias jls='jira issue list -a$(jira me) --plain --status "In Progress" --status "Review" --status "To Do" --status "Ready for release"'
+alias nvim='NVIM_APPNAME=nvim-012 ~/nvim-macos-arm64/bin/nvim'
 
 # Git:
 alias g="git"
@@ -221,9 +242,15 @@ alias 1pass='eval $(op signin tractable)'
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias myip='curl http://whatismyip.akamai.com/'
 
+# blocking npm/yarn installs
+# override if necessary with
+#   \npm
+#   \yarn
+alias npm='echo "🚫 npm is blocked in this shell"; false'
+alias yarn='echo "🚫 yarn is blocked in this shell"; false'
+
+GOBIN="$HOME/go/bin"
 # PATH garbage
-export GOPATH=$HOME/go
-export GOBIN="/Users/robinyonge/go/bin"
 export PATH="$PATH:$HOME/.poetry/bin:/usr/local/sbin:$HOME/.cargo/bin:/Users/robinyonge/code/git/tractable/cli-tools/bin:/Users/robinyonge/.kafka/current/bin:${KREW_ROOT:-$HOME/.krew}/bin:$GOBIN:/usr/local/opt/findutils/libexec/gnubin:/Users/robinyonge/.local/bin:${KREW_ROOT:-$HOME/.krew}/bin:/Users/robin.lightfoot/.local/bin"
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -247,6 +274,7 @@ precmd() {
 function myprompt() {
   RETVAL=$?
   vcs_info
+  kube_set
 
   local 'STATUS_COLOR' 'PROMPTMOJI'
   if [[ $RETVAL -eq 0 ]]; then
@@ -273,18 +301,18 @@ function myprompt() {
   # local 'TF_VERSION_PROMPT'
   if [[ $(mise tool terraform --config-source --json | jq -r .path | xargs dirname) == ${PWD} ]]; then
     if [[ -z $USING_PROMPT ]]; then
-      USING_PROMPT="%F{magenta}tf$(mise tool terraform --active)%f "
+      USING_PROMPT="%F{cyan}tf$(mise tool terraform --active)%f "
     else
-      USING_PROMPT="${USING_PROMPT} and %F{magenta}tf$(mise tool terraform --active)%f "
+      USING_PROMPT="${USING_PROMPT} and %F{cyan}tf$(mise tool terraform --active)%f "
     fi
   fi
 
   # local NODE_VERSION=$(mise tool node --json)
   if [[ $(mise tool node --config-source --json | jq -r .path | xargs dirname) == ${PWD} ]]; then
     if [[ -z $USING_PROMPT ]]; then
-      USING_PROMPT="%F{magenta}node$(mise tool node --active)%f "
+      USING_PROMPT="%F{cyan}node$(mise tool node --active)%f "
     else
-      USING_PROMPT="${USING_PROMPT}and %F{magenta}node$(mise tool node --active)%f "
+      USING_PROMPT="${USING_PROMPT}and %F{cyan}node$(mise tool node --active)%f "
     fi
   fi
 
@@ -304,10 +332,19 @@ function myprompt() {
   if [[ -z "$KUBE_CONTEXT" ]] ; then
     KUBE_CONTEXT_PROMPT=""
   else
-    KUBE_CONTEXT_PROMPT="on %F{white}${KUBE_CONTEXT}(${KUBE_NAMESPACE})%f "
+    if [[ -z "$KUBE_NAMESPACE" ]] ; then
+      export KUBE_NAMESPACE=$(kubectl config view --minify --output 'jsonpath={..namespace}')
+    fi
+    KUBE_CONTEXT_PROMPT="on %F{cyan}${KUBE_CONTEXT}(${KUBE_NAMESPACE})%f "
   fi
 
-  PS1=%F{blue}%~%f%F{green}${vcs_info_msg_0_}%f' '"$AWS_PROMPT""$KUBE_CONTEXT_PROMPT""$USING_PROMPT""$TF_VERSION_PROMPT""$NODE_VERSION_PROMPT""$PROMPTMOJI"$'\n'%F{$STATUS_COLOR}'↳ '%f
+  if [[ ! -f ".terraform.lock.hcl" ]] ; then
+    TERRAFORM_WORKSPACE_PROMPT=""
+  else
+    TERRAFORM_WORKSPACE_PROMPT="on %F{cyan}space:$(terraform workspace show)%f "
+  fi
+
+  PS1=%F{blue}%~%f%F{green}${vcs_info_msg_0_}%f' '"$AWS_PROMPT""$KUBE_CONTEXT_PROMPT""$TERRAFORM_WORKSPACE_PROMPT""$USING_PROMPT""$TF_VERSION_PROMPT""$NODE_VERSION_PROMPT""$PROMPTMOJI"$'\n'%F{$STATUS_COLOR}'↳ '%f
   # PS0=$'\nps0'
   # PS2="ps2 > "
   return
@@ -320,20 +357,6 @@ export K9S_CONFIG_DIR="/Users/robin.lightfoot/.config/k9s"
 
 # syntax highlighting
 # source /Users/robinyonge/code/git/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# https://vitormv.github.io/fzf-themes#eyJib3JkZXJTdHlsZSI6InJvdW5kZWQiLCJib3JkZXJMYWJlbCI6IiIsImJvcmRlckxhYmVsUG9zaXRpb24iOjAsInByZXZpZXdCb3JkZXJTdHlsZSI6InJvdW5kZWQiLCJwYWRkaW5nIjoiMCIsIm1hcmdpbiI6IjAiLCJwcm9tcHQiOiI+ICIsIm1hcmtlciI6Ij4iLCJwb2ludGVyIjoi4peGIiwic2VwYXJhdG9yIjoiIiwic2Nyb2xsYmFyIjoiIiwibGF5b3V0IjoiZGVmYXVsdCIsImluZm8iOiJyaWdodCIsImNvbG9ycyI6ImZnOiNjOGIzYjMsZmcrOiM0MTQxNDEsYmc6I2ZiZjhmOCxiZys6I2ZiZjhmOCxobDojYzhiM2IzLGhsKzojNDE0MTQxLGluZm86I2FmYWY4NyxtYXJrZXI6I2Y2ZTNlNyxwcm9tcHQ6I2Y2ZTNlNyxzcGlubmVyOiNlZWFhYmUscG9pbnRlcjojZWVhYWJlLGhlYWRlcjojODJiNGUzLGJvcmRlcjojY2ZjOWY0LGxhYmVsOiNhZWFlYWUscXVlcnk6Izk0ODQ4NCJ9
-export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
-  --color=fg:#c8b3b3,fg+:#414141,bg:#fbf8f8,bg+:#fbf8f8
-  --color=hl:#c8b3b3,hl+:#414141,info:#afaf87,marker:#f6e3e7
-  --color=prompt:#f6e3e7,spinner:#eeaabe,pointer:#eeaabe,header:#82b4e3
-  --color=border:#cfc9f4,label:#aeaeae,query:#948484
-  --border="rounded" --border-label="" --preview-window="border-rounded" --prompt="> "
-  --marker=">" --pointer="◆" --separator="" --scrollbar=""
-  --info="right"'
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# Set up fzf key bindings and fuzzy completion
-source <(fzf --zsh)
 
 eval "$(atuin init zsh)"
 
@@ -348,3 +371,4 @@ if [ -f '/Users/robin.lightfoot/bin/google-cloud-sdk/completion.zsh.inc' ]; then
 [ -s ~/.beamery-tooling/bin/tooling-setup.sh ] && source ~/.beamery-tooling/bin/tooling-setup.sh
 # hook direnv in zshrc
 eval "$(direnv hook zsh)"
+export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
